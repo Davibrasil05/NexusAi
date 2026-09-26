@@ -1,3 +1,4 @@
+from __future__ import annotations
 """buscar_unidades: escolhe o destino pelo RECURSO necessário, não pela distância.
 
 Entre as unidades que têm todos os recursos do caso, fica a de menor tempo de barco.

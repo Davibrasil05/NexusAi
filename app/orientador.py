@@ -1,3 +1,4 @@
+from __future__ import annotations
 """buscar_protocolo: monta a busca a partir do CASO (não de pergunta livre) e escolhe os trechos.
 
 A escolha pega o melhor trecho de cada tipo (o que fazer, o que não fazer, sinais de alerta,

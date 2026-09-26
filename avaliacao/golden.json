@@ -1,0 +1,40 @@
+[
+  {
+    "caso": "O paciente levou uma pancada na cabeça ontem, hoje amanheceu com muito sono, confuso e vomitou duas vezes.",
+    "cor_esperada": "vermelho",
+    "trechos_esperados": [
+      "trauma_cabeca_sinais_alerta"
+    ]
+  },
+  {
+    "caso": "Senhora com manchas roxas pelo corpo que apareceram do nada, teve febre alta nos últimos 4 dias e sangramento na gengiva ao escovar os dentes. O marido quer dar AAS pra dor.",
+    "cor_esperada": "vermelho",
+    "trechos_esperados": [
+      "dengue_sinais_alerta",
+      "dengue_nao_fazer_aas",
+      "dengue_cuidados_hidratacao"
+    ]
+  },
+  {
+    "caso": "Criança levou uma pancada na canela jogando bola, fez um galo roxo, mas tá brincando normal e não tem dor forte. O que fazer?",
+    "cor_esperada": "verde",
+    "trechos_esperados": [
+      "trauma_cuidados_compressa",
+      "trauma_quando_voltar"
+    ]
+  },
+  {
+    "caso": "Apareceram pontinhos vermelhos na minha pele hoje, e estou muito cansado, mas não bati em lugar nenhum.",
+    "cor_esperada": "laranja",
+    "trechos_esperados": [
+      "geral_pontinhos_vermelhos"
+    ]
+  },
+  {
+    "caso": "Hematoma amarelado antigo na coxa, não dói, aconteceu semana passada num esbarrão na mesa.",
+    "cor_esperada": "verde",
+    "trechos_esperados": [
+      "geral_hematoma_antigo"
+    ]
+  }
+]

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Regras de risco em código puro: sinais de alerta, cor, motivo e campos que faltam.
 
 O LLM NUNCA decide a cor. Estas funções são determinísticas e testadas pelo avaliacao/avaliar.py.

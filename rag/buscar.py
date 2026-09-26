@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Busca BM25 sobre o índice, com filtro por metadados e nota mínima.
 
 Uso (para testar o que foi adicionado):

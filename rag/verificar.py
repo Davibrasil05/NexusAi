@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Verificador da orientação escrita pelo LLM.
 
 Barra a fala se: não cita nada, cita id que não foi recuperado, ou menciona remédio/dose
