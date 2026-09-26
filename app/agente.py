@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Loop de coleta do agente.
 
 Quem decide o quê:
@@ -13,6 +12,7 @@ Quem decide o quê:
 
 Cada passo fica em caso.passos (é o que o painel de raciocínio mostra).
 """
+from __future__ import annotations
 import json
 import re
 import time
@@ -250,19 +250,22 @@ class Agente:
     def _orientar(self, caso: Caso, cls) -> None:
         """buscar_protocolo (RAG) -> LLM escreve a fala -> verificador. Sem trecho, sem orientação."""
         t0 = time.perf_counter()
-        consulta = orientador.montar_consulta(caso.campos)
+        falas_acs = " ".join(m.texto for m in caso.historico if m.autor == "acs")
+        consulta = orientador.montar_consulta(caso.campos, falas_acs)
         filtro = orientador.filtros(caso.campos)
         try:
             if self._buscador is None:
                 from rag.buscar import Buscador
                 self._buscador = Buscador()
-            candidatos = self._buscador.buscar(consulta, filtro["subtipo"], filtro["condicoes"], k=12)
+            candidatos = self._buscador.buscar(consulta, filtro["subtipo"], filtro["condicoes"], k=12, cor=cls.cor)
         except (FileNotFoundError, ValueError) as e:
             caso.registrar("buscar_protocolo", "guardrail", saida={"erro": str(e)}, ms=_ms(t0))
             candidatos = []
-            
+
+        # Caso grave: nada de "quando voltar"/"pode ficar em casa" (proteção do Carlos, PR #1).
+        # Trechos só para casos leves são marcados com "cores" no próprio JSON (filtrados na busca).
         if cls.cor in ("vermelho", "laranja"):
-            candidatos = [c for c in candidatos if c["tipo"] != "quando_voltar" and c["id"] != "geral_hematoma_antigo"]
+            candidatos = [c for c in candidatos if c["tipo"] != "quando_voltar"]
 
         trechos = orientador.escolher(candidatos)
         caso.registrar("buscar_protocolo", "rag",

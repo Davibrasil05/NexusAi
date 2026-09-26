@@ -15,6 +15,8 @@ congelamento 15h). Documentos de origem: `~/Downloads/plano_acao_tecnico.pdf`, `
 - Rede de segurança: `palavras.alertas_no_texto` marca alerta do texto bruto que o LLM perdeu.
 - JSON inválido → 1 nova tentativa → fallback do código. Erro de conexão/timeout → fallback direto.
 - Conflito LLM × palavras em `pancada` → descarta e pergunta de novo.
+- Caso vermelho/laranja: sem trechos `quando_voltar`; trechos com `cores` só aparecem nessas cores.
+- Verificador exige **fonte em toda frase** (`frases_sem_fonte`).
 - **Sem trecho, sem orientação.** Verificador (`rag/verificar.py`) barra citação inválida e remédio/dose fora dos trechos → mostra só os trechos.
 - O ACS dá a palavra final.
 
@@ -42,6 +44,7 @@ scripts/conversar.py      agente no terminal (--llm ollama --passos --roteiro "a
 
 ## Comandos
 ```bash
+.venv/bin/python avaliacao/avaliar.py [--llm ollama]   # golden.json; sai com erro se grave virar leve
 LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000
 .venv/bin/python scripts/conversar.py --llm ollama --passos
 .venv/bin/python scripts/testar_modelo.py qwen3:8b
@@ -68,8 +71,13 @@ LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000
 - [x] 4. Orientação: RAG → LLM → verificador (testado com índice de teste; **índice real vazio** até o amigo alimentar)
 - [x] 5. API FastAPI + ficha (SQLite dados/fichas.db) + fila offline + sinal simulado. Contrato: `API.md`
 - [x] 6. Front React + Tailwind 4 (Vite) em `front/`; build versionado em `web/` (a API serve em /web/, painel em /web/#/painel)
-- [ ] 7. Avaliação golden.json (~15 casos; meta: zero grave como leve)
+- [x] 7. `avaliacao/avaliar.py` roda o golden.json do Carlos (5 casos; meta 15). Placar: 0 grave como leve
 - [ ] 8. Ensaio offline + vídeo de backup (~13h)
+
+## Compatibilidade
+- Carlos usa **Python 3.9**. Todo .py tem `from __future__ import annotations` DEPOIS da docstring.
+- Onde o tipo é avaliado em tempo de execução (rotas FastAPI, campos Pydantic) usar `Optional[...]`, nunca `X | None`.
+- Testar no 3.9: `/usr/bin/python3` (3.9.6) num venv à parte.
 
 ## Pendências conhecidas
 - Laranja/amarelo em `regras.py` são PROPOSTA; validar com a equipe.

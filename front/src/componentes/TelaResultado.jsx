@@ -38,7 +38,7 @@ function Trechos({ trechos, abertos }) {
               {t.fonte_titulo}
               {t.pagina ? `, p. ${t.pagina}` : ""}
               {!t.conferido && (
-                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800">não conferido no PDF</span>
+                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800" title="O texto ainda não foi conferido no PDF original">a conferir no PDF</span>
               )}
             </span>
           </li>
@@ -74,7 +74,9 @@ function Orientacao({ orientacao }) {
       <>
         <div className="flex gap-3 rounded-2xl bg-amber-50 p-4 text-amber-900">
           <ShieldAlert className="size-6 shrink-0" />
-          <p className="text-base">Mostrando o texto original do protocolo, sem resumo da IA.</p>
+          <p className="text-base">{orientacao.problemas_verificador?.some((p) => p.startsWith("frase sem fonte"))
+            ? "O resumo da IA tinha uma frase sem fonte no protocolo. Por segurança, mostramos o texto original."
+            : "Mostrando o texto original do protocolo, sem resumo da IA."}</p>
         </div>
         <Trechos trechos={orientacao.trechos} abertos />
       </>

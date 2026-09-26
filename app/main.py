@@ -6,10 +6,12 @@
 Contrato das rotas para o front: API.md.
 As rotas são 'def' (não async): a chamada ao modelo bloqueia e roda no threadpool do FastAPI.
 """
+from __future__ import annotations
 import base64
 import binascii
 import re
 import threading
+from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -128,7 +130,7 @@ def mudar_sinal(estado: EstadoSinal):
 # ---------- painel da unidade ----------
 
 @app.get("/api/fichas")
-def listar_fichas(status: str | None = None, unidade: str | None = None):
+def listar_fichas(status: Optional[str] = None, unidade: Optional[str] = None):  # Optional: FastAPI avalia no 3.9
     """Painel da unidade: GET /api/fichas?status=enviada (&unidade=<id> para filtrar o destino)."""
     lista = fichas.listar(status)
     if unidade:

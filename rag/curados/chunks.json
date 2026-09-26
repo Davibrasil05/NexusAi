@@ -14,7 +14,8 @@
       "sangramento"
     ],
     "fonte": "dengue_manejo",
-    "pagina": 15
+    "pagina": 15,
+    "condicao": "dengue"
   },
   {
     "id": "dengue_cuidados_hidratacao",
@@ -28,7 +29,8 @@
       "hidratação"
     ],
     "fonte": "dengue_manejo",
-    "pagina": 20
+    "pagina": 20,
+    "condicao": "dengue"
   },
   {
     "id": "dengue_sinais_alerta",
@@ -45,7 +47,8 @@
       "dor na barriga"
     ],
     "fonte": "dengue_manejo",
-    "pagina": 25
+    "pagina": 25,
+    "condicao": "dengue"
   },
   {
     "id": "trauma_cuidados_compressa",
@@ -79,7 +82,8 @@
       "desmaio"
     ],
     "fonte": "sbv_samu",
-    "pagina": 110
+    "pagina": 110,
+    "condicao": "cabeca"
   },
   {
     "id": "trauma_fratura_sinais",
@@ -95,7 +99,8 @@
       "batida"
     ],
     "fonte": "sbv_samu",
-    "pagina": 115
+    "pagina": 115,
+    "condicao": "membro"
   },
   {
     "id": "trauma_quando_voltar",
@@ -110,7 +115,11 @@
       "tranquilo"
     ],
     "fonte": "cab28",
-    "pagina": 42
+    "pagina": 42,
+    "cores": [
+      "verde",
+      "amarelo"
+    ]
   },
   {
     "id": "picada_cobra_alerta",
@@ -125,7 +134,8 @@
       "animal"
     ],
     "fonte": "sbv_samu",
-    "pagina": 150
+    "pagina": 150,
+    "condicao": "cobra"
   },
   {
     "id": "geral_hematoma_antigo",
@@ -141,7 +151,11 @@
       "não dói"
     ],
     "fonte": "cab28",
-    "pagina": 45
+    "pagina": 45,
+    "cores": [
+      "verde",
+      "amarelo"
+    ]
   },
   {
     "id": "geral_pontinhos_vermelhos",

@@ -1,4 +1,5 @@
 """Configuração lida de variáveis de ambiente. Nada aqui acessa a internet."""
+from __future__ import annotations
 import os
 from pathlib import Path
 

@@ -1,9 +1,9 @@
-from __future__ import annotations
 """LLM simulado: responde no mesmo contrato do modelo real, usando palavras-chave.
 
 Serve para o time desenvolver front, regras e RAG sem depender do modelo local.
 Com LLM_MOCK_FALHAS=0.3, devolve JSON quebrado 30% das vezes (para testar os guardrails).
 """
+from __future__ import annotations
 import json
 import random
 import re

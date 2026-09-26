@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Extrator de campos por palavras-chave, sem LLM.
 
 Três usos:
@@ -7,6 +6,7 @@ Três usos:
 3. É a REDE DE SEGURANÇA: depois do LLM, procura sinais de alerta no texto bruto do ACS.
    Se achar um alerta que o LLM deixou passar, marca o campo (pior cenário).
 """
+from __future__ import annotations
 import re
 
 from unidecode import unidecode
@@ -24,8 +24,8 @@ BARREIRAS = {SEPARADOR, "mas", "e", "porem", "so", "que"}
 LEXICO_BOOL: dict[str, dict[str, list[str]]] = {
     "pancada": {
         "neg": [r"sem (pancada|queda|batida)", r"nao (teve|houve|levou) (pancada|queda|batida)",
-                r"nao (bateu|caiu|machucou)", r"sozinh", r"do nada", r"espontane", r"sem motivo"],
-        "pos": [r"pancada", r"bateu", r"caiu", r"queda", r"tombo", r"batida", r"acidente",
+                r"nao (bateu|bati|caiu|cai|machucou|machuquei|levou pancada)", r"sem bater", r"sozinh", r"do nada", r"espontane", r"sem motivo"],
+        "pos": [r"pancada", r"bateu", r"bati\b", r"caiu", r"cai\b", r"queda", r"tombo", r"batida", r"acidente",
                 r"machucou", r"levou uma", r"trombou", r"esbarr", r"topada"],
     },
     "sinais_cabeca": {

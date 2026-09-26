@@ -3,6 +3,7 @@
 Sem sinal, a ficha fica 'na_fila' no aparelho do ACS. Ao ligar o sinal, tudo o que está na fila
 vai para 'enviada' e aparece no painel da unidade. O SINAL É SIMULADO (botão); o modelo é real.
 """
+from __future__ import annotations
 import json
 import sqlite3
 import threading

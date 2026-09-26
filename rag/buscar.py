@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Busca BM25 sobre o índice, com filtro por metadados e nota mínima.
 
 Uso (para testar o que foi adicionado):
@@ -6,6 +5,7 @@ Uso (para testar o que foi adicionado):
   python -m rag.buscar "pancada cabeça vômito" --subtipo traumatico --condicao cabeca
   python -m rag.buscar "picada cobra" --so-curados -k 3
 """
+from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
@@ -32,7 +32,7 @@ class Buscador:
 
     def buscar(self, consulta: str, subtipo: str | None = None, condicoes: set[str] | None = None,
                tipos: set[str] | None = None, k: int = RAG_TOP_K, limiar: float = RAG_LIMIAR,
-               so_curados: bool = False) -> list[dict]:
+               so_curados: bool = False, cor: str | None = None) -> list[dict]:
         """Filtro vem do CASO (subtipo, condições), não da pergunta livre.
 
         subtipo=None não filtra; com subtipo, entram os do subtipo e os 'geral'.
@@ -49,6 +49,8 @@ class Buscador:
                 continue
             if so_curados and t["origem"] != "curado":
                 continue
+            if cor and t.get("cores") and cor not in t["cores"]:
+                continue  # ex.: "hematoma antigo, pode ficar em casa" só vale para verde/amarelo
             nota = float(nota) * (PESO_CURADO if t["origem"] == "curado" else 1.0)
             if nota >= limiar:
                 achados.append({**t, "nota": round(nota, 2)})

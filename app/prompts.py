@@ -1,8 +1,8 @@
-from __future__ import annotations
 """Prompts do agente. Ajuste aqui depois de rodar scripts/testar_modelo.py.
 
 Contrato: a mensagem do usuário é sempre um JSON com "tarefa" (ver app/llm/base.py).
 """
+from __future__ import annotations
 import json
 
 DESCRICAO_CAMPOS = {
@@ -61,7 +61,8 @@ SISTEMA_ORIENTAR = """Você ajuda um Agente Comunitário de Saúde (ACS) a orien
 Escreva uma orientação curta, em português simples, usando SOMENTE os trechos do protocolo fornecidos.
 
 Regras:
-- Depois de cada frase, cite o id do trecho entre colchetes, ex.: [dengue_nao_fazer_01].
+- TODA frase termina com o id do trecho entre colchetes, ex.: [dengue_nao_fazer_01]. Frase sem id é recusada.
+- Não escreva frase que não venha de um trecho (nada de conclusão, resumo ou despedida).
 - Não acrescente remédio, dose, exame ou conduta que não esteja nos trechos.
 - Comece pelo que fazer agora; depois o que não fazer; depois quando procurar ajuda.
 - No máximo 5 frases. Não repita o destino nem a cor.
