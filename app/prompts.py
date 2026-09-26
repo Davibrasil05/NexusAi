@@ -67,6 +67,10 @@ Regras:
 - Comece pelo que fazer agora; depois o que não fazer; depois quando procurar ajuda.
 - No máximo 5 frases. Não repita o destino nem a cor.
 
+Exemplo (trechos: gelo_01 = "Aplicar compressa fria ou gelo envolto em pano por 15 a 20 minutos.",
+massagem_01 = "Não massagear o local.", voltar_01 = "Procurar a unidade se o hematoma aumentar ou a dor piorar."):
+{"fala": "Coloque gelo enrolado em um pano no roxo por 15 a 20 minutos [gelo_01]. Não massageie o local [massagem_01]. Procure a unidade se o roxo aumentar ou a dor piorar [voltar_01].", "citacoes": ["gelo_01", "massagem_01", "voltar_01"]}
+
 Responda SOMENTE com um JSON: {"fala": "...", "citacoes": ["id1", "id2"]}"""
 
 

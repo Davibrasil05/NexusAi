@@ -44,6 +44,29 @@ def frases_sem_fonte(fala: str) -> list[str]:
     return [f.strip() for f in sem]
 
 
+def remover_frases_sem_fonte(fala: str) -> tuple[str, list[str]]:
+    """Tira as frases sem citação e mantém as citadas. Devolve (fala limpa, frases removidas).
+
+    "A [x]. Pode ficar em casa. B [y]." -> "A [x]. B [y]."
+    """
+    partes = RE_CITACAO.split(fala)  # texto, id, texto, id, ..., texto
+    saida, removidas = [], []
+    for i in range(0, len(partes), 2):
+        pedacos = re.split(r"(?<=[.!?])\s+", partes[i])
+        citado = i + 1 < len(partes)
+        longos = [k for k, p in enumerate(pedacos) if len(re.findall(r"\w+", p)) >= MIN_PALAVRAS_FRASE]
+        coberto = longos[-1] if citado and longos else None  # só a última frase antes da citação
+        for k, p in enumerate(pedacos):
+            if k in longos and k != coberto:
+                removidas.append(p.strip())
+            else:
+                saida.append(p)
+        if citado:
+            saida.append(f"[{partes[i + 1]}]")
+    limpa = re.sub(r"\s+([.,;!?])", r"\1", " ".join(x for x in saida if x.strip()))
+    return re.sub(r"\s{2,}", " ", limpa).strip(), removidas
+
+
 def verificar(fala: str, citacoes: list[str], trechos: list[dict]) -> list[str]:
     """Lista de problemas (vazia = aprovado)."""
     ids = {t["id"] for t in trechos}

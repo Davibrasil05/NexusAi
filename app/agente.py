@@ -30,7 +30,7 @@ from app.modelos import (AcaoAtualizar, AcaoPerguntar, CamposCaso, Caso, Mensage
                          TrechoRecuperado)
 from app.regras import CAMPOS_ALERTA, PERGUNTAS, PIOR_CENARIO, classificar
 from app.unidades import buscar_unidades
-from rag.verificar import RE_CITACAO, verificar
+from rag.verificar import RE_CITACAO, remover_frases_sem_fonte, verificar
 
 NOMES_COR = {"vermelho": "VERMELHO", "laranja": "LARANJA", "amarelo": "AMARELO", "verde": "VERDE"}
 _SIM = {"sim", "s", "true", "yes"}
@@ -80,6 +80,14 @@ def validar_campos(campos: dict) -> tuple[dict, dict]:
         except ValidationError:
             rejeitados[nome] = f"valor inválido: {valor!r}"
     return validos, rejeitados
+
+
+CAMPOS_ALERTA_E_MEXE = CAMPOS_ALERTA | {"mexe_apoia"}
+
+
+def _risco(campo: str, valor: Any) -> bool:
+    """True se o valor é o que PREOCUPA (sempre aceito do LLM): SIM; em mexe_apoia, NÃO."""
+    return valor is False if campo == "mexe_apoia" else valor is True
 
 
 def _piora(campo: str, atual: Any, novo: Any) -> bool:
@@ -169,6 +177,14 @@ class Agente:
                            saida={"llm": validos["pancada"], "palavras": por_palavras["pancada"]})
             validos = {k: v for k, v in validos.items() if k != "pancada"}
             por_palavras = {k: v for k, v in por_palavras.items() if k != "pancada"}
+        # Sinal de alerta que o ACS não mencionou: o LLM não pode "responder por ele".
+        # "Não" faria o agente nunca perguntar; "não sei" subiria o risco sem motivo.
+        # Só vale com evidência: é o campo perguntado, ou a fala menciona o campo.
+        sem_evidencia = {k: v for k, v in validos.items()
+                         if k in CAMPOS_ALERTA_E_MEXE and not _risco(k, v) and k != campo and k not in por_palavras}
+        if sem_evidencia:
+            validos = {k: v for k, v in validos.items() if k not in sem_evidencia}
+            caso.registrar("sem_evidencia", "guardrail", entrada=texto, saida={"descartados": sem_evidencia})
         # O LLM respondeu, mas rejeitamos um valor ou ele esqueceu o campo perguntado:
         # completa só esses campos com o extrator por palavras.
         faltou = set(rejeitados) | ({campo} if campo and campo not in validos else set())
@@ -289,8 +305,15 @@ class Agente:
             caso.orientacao = Orientacao(status="so_trechos", trechos=recuperados,
                                          problemas_verificador=["o modelo não gerou a orientação"])
             return
-        if not resp.citacoes:
-            resp.citacoes = list(dict.fromkeys(RE_CITACAO.findall(resp.fala)))
+        fala, removidas = remover_frases_sem_fonte(resp.fala)
+        if removidas:
+            caso.registrar("frase_sem_fonte_removida", "guardrail", saida={"removidas": removidas})
+        citadas = list(dict.fromkeys(RE_CITACAO.findall(fala)))
+        if not citadas:
+            caso.orientacao = Orientacao(status="so_trechos", trechos=recuperados,
+                                         problemas_verificador=[f"frase sem fonte: {f[:80]}" for f in removidas])
+            return
+        resp = RespostaOrientar(fala=fala, citacoes=citadas)
         problemas = verificar(resp.fala, resp.citacoes, trechos)
         caso.registrar("verificador", "guardrail" if problemas else "codigo",
                        entrada={"citacoes": resp.citacoes}, saida={"aprovado": not problemas, "problemas": problemas})

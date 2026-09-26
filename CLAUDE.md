@@ -16,7 +16,9 @@ congelamento 15h). Documentos de origem: `~/Downloads/plano_acao_tecnico.pdf`, `
 - JSON inválido → 1 nova tentativa → fallback do código. Erro de conexão/timeout → fallback direto.
 - Conflito LLM × palavras em `pancada` → descarta e pergunta de novo.
 - Caso vermelho/laranja: sem trechos `quando_voltar`; trechos com `cores` só aparecem nessas cores.
-- Verificador exige **fonte em toda frase** (`frases_sem_fonte`).
+- Frase sem fonte é **removida** da orientação (`remover_frases_sem_fonte`); só cai para "só trechos" se não sobrar frase citada.
+- Sinal de alerta NÃO mencionado: o LLM não pode responder "não"/"não sei" por ele (`sem_evidencia` em `_extrair`); "sim" é sempre aceito.
+- Negação depois da palavra ("febre não", "vomitou não teve") é reconhecida; "febre não passa" continua SIM.
 - **Sem trecho, sem orientação.** Verificador (`rag/verificar.py`) barra citação inválida e remédio/dose fora dos trechos → mostra só os trechos.
 - O ACS dá a palavra final.
 
@@ -84,4 +86,4 @@ LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000
 - Laranja/amarelo em `regras.py` são PROPOSTA; validar com a equipe.
 - `RAG_LIMIAR=0.5` é chute: calibrar com os PDFs reais (`rag.buscar ... --limiar -99`).
 - `fontes.json`: URLs vazias; o amigo preenche. Fonte de peçonhentos adicionada (não estava no plano).
-- O qwen3 às vezes marca `crescendo_ou_sangrando` com gengiva sangrando; a regra sem trauma pede só exame de sangue, então o destino fica certo.
+- O qwen3 marca `crescendo_ou_sangrando` quando há gengiva/nariz/urina sangrando (3/3 nos testes): próxima melhoria é dividir o campo em "roxo crescendo" e "ferida que não para de sangrar".

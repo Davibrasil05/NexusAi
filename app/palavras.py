@@ -40,7 +40,7 @@ LEXICO_BOOL: dict[str, dict[str, list[str]]] = {
     },
     "deformidade": {
         "neg": [],
-        "pos": [r"tort[oa]", r"entort", r"deformad", r"osso (pra|para) fora", r"fora do lugar",
+        "pos": [r"tort[oa]?\b", r"entort", r"deformad", r"osso (pra|para) fora", r"fora do lugar",
                 r"fri[oa]\b", r"gelad", r"azulad"],
     },
     "mexe_apoia": {
@@ -56,12 +56,12 @@ LEXICO_BOOL: dict[str, dict[str, list[str]]] = {
     },
     "febre": {
         "neg": [],
-        "pos": [r"febre", r"febril", r"(ta|esta|corpo) quente", r"quentura"],
+        "pos": [r"febr[ei]", r"febril", r"(ta|esta|corpo) quente", r"quentura"],
     },
     "sangramento_mucosa": {
         "neg": [],
         "pos": [r"gengiva", r"sangr\w* (pelo|no|do) nariz", r"nariz sangr", r"sangue (no|do|pelo) nariz",
-                r"sangue na (urina|xixi)", r"(urina|xixi) com sangue", r"(urina|xixi) (vermelh|escur)",
+                r"sangue na (urina|xixi)", r"(urina|xixi)\b[\w\s]{0,20}\bsangue", r"(urina|xixi) (vermelh|escur)",
                 r"sangue na boca", r"epistax", r"mucosa"],
     },
     "petequias": {
@@ -128,6 +128,23 @@ def _negado(t: str, inicio: int) -> bool | str:
     return any(p in NEGACOES for p in antes[-JANELA_NEGACAO:])
 
 
+# Negação DEPOIS do termo, comum no Norte: "febre não", "vomitou não", "febre não teve".
+# Só conta se a frase acaba ali ou segue um destes verbos; "febre não passa" continua SIM.
+NEGA_DEPOIS = {"nao", "nunca", "nenhum", "nenhuma"}
+VERBOS_DEPOIS = {"teve", "tem", "ta", "esta", "houve", "deu", "sentiu", "apresentou", "apareceu", "viu", "vi",
+                 "senhor", "senhora", "doutor", "doutora"}
+
+
+def _negado_depois(t: str, fim: int) -> bool | str:
+    resto = re.sub(r"^\w*", "", t[fim:]).split()  # termina a palavra do termo ("vomit" -> "vomitou")
+    if not resto or resto[0] not in NEGA_DEPOIS:
+        return False
+    seguinte = resto[1] if len(resto) > 1 else None
+    if seguinte == "sei":
+        return "nao_sei"
+    return seguinte is None or seguinte in BARREIRAS or seguinte in VERBOS_DEPOIS
+
+
 def _detectar_bool(t: str, lex: dict[str, list[str]]):
     for p in lex["neg"]:
         if re.search(r"\b" + p, t):
@@ -136,7 +153,7 @@ def _detectar_bool(t: str, lex: dict[str, list[str]]):
     achou_negado = achou_nao_sei = False
     for p in lex["pos"]:
         for m in re.finditer(r"\b" + p, t):
-            neg = _negado(t, m.start())
+            neg = _negado(t, m.start()) or _negado_depois(t, m.end())
             if neg == "nao_sei":
                 achou_nao_sei = True
             elif neg:
