@@ -22,6 +22,17 @@ def comunidades() -> list[str]:
     return carregar()["comunidades"]
 
 
+def resolver_comunidade(texto: str) -> str:
+    """O ACS digita a comunidade. Se bater com uma cadastrada (sem acento/maiúscula), usa o nome oficial."""
+    from unidecode import unidecode
+    chave = lambda t: " ".join(unidecode(t).lower().split())
+    digitado = chave(texto)
+    for c in comunidades():
+        if chave(c) == digitado:
+            return c
+    return " ".join(texto.split())
+
+
 def _nomes(recursos) -> str:
     nomes = carregar()["recursos_nomes"]
     lista = [nomes.get(r, r) for r in recursos]

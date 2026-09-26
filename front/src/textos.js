@@ -9,23 +9,24 @@ export const NIVEL = {
 
 const SIM_NAO = ["Sim", "Não", "Não sei"];
 const CHIPS = {
-  pancada: ["Teve pancada ou queda", "Apareceu sozinha"],
+  pancada: ["Teve pancada ou queda", "Apareceu sem pancada"],
   local: ["Cabeça", "Peito", "Barriga", "Braço", "Perna"],
-  mecanismo: ["Queda de altura", "Acidente de barco", "Acidente de moto", "Pancada leve"],
+  mecanismo: ["Queda de altura", "Acidente de barco", "Acidente de moto", "Pancada leve", "Outro jeito"],
 };
 export const respostasRapidas = (campo) => (campo ? CHIPS[campo] ?? SIM_NAO : []);
 
 export const CAMPOS = {
   pancada: "se teve pancada",
-  local: "local do roxo",
+  local: "onde está a mancha",
   mecanismo: "como foi a pancada",
   sinais_cabeca: "vômito, sono ou confusão",
   dor_forte_ou_falta_ar: "dor forte ou falta de ar",
   deformidade: "braço/perna torto ou frio",
   mexe_apoia: "se mexe e apoia",
-  crescendo_ou_sangrando: "roxo crescendo ou sangrando",
+  crescendo: "se a mancha está aumentando",
+  sangramento_nao_para: "sangramento que não para",
   febre: "febre",
-  sangramento_mucosa: "sangramento na gengiva, nariz ou urina",
+  sangramento_mucosa: "sangue na gengiva, nariz ou xixi",
   petequias: "pontinhos vermelhos",
   picada_cobra: "picada de cobra",
   cansaco_palidez: "cansaço ou palidez",
@@ -41,8 +42,10 @@ export const QUEM = {
 };
 
 export const PASSOS = {
+  sem_evidencia: "Ignorou resposta que o ACS não deu",
+  frase_sem_fonte_removida: "Tirou frase sem fonte",
   abrir_caso: "ACS abriu o atendimento",
-  pergunta_padrao: "Pergunta padrão",
+  pergunta_padrao: "Fez a próxima pergunta",
   perguntar: "Escolheu como perguntar",
   atualizar_caso: "Entendeu a resposta",
   validar_json: "Resposta do modelo recusada",

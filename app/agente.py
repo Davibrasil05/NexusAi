@@ -83,6 +83,9 @@ def validar_campos(campos: dict) -> tuple[dict, dict]:
 
 
 CAMPOS_ALERTA_E_MEXE = CAMPOS_ALERTA | {"mexe_apoia"}
+# Campos que o agente SEMPRE pergunta: um "sim" sem evidência na fala é descartado sem risco,
+# porque a pergunta vem logo em seguida. O qwen3 lê "apareceu uma mancha" como "está aumentando".
+SEMPRE_PERGUNTADOS = {"crescendo"}
 
 
 def _risco(campo: str, valor: Any) -> bool:
@@ -181,7 +184,8 @@ class Agente:
         # "Não" faria o agente nunca perguntar; "não sei" subiria o risco sem motivo.
         # Só vale com evidência: é o campo perguntado, ou a fala menciona o campo.
         sem_evidencia = {k: v for k, v in validos.items()
-                         if k in CAMPOS_ALERTA_E_MEXE and not _risco(k, v) and k != campo and k not in por_palavras}
+                         if k in CAMPOS_ALERTA_E_MEXE and k != campo and k not in por_palavras
+                         and (not _risco(k, v) or k in SEMPRE_PERGUNTADOS)}
         if sem_evidencia:
             validos = {k: v for k, v in validos.items() if k not in sem_evidencia}
             caso.registrar("sem_evidencia", "guardrail", entrada=texto, saida={"descartados": sem_evidencia})
@@ -244,7 +248,7 @@ class Agente:
         caso.classificacao = cls
         caso.campo_perguntado = None
         motivos = "; ".join(cls.motivos)
-        texto = f"Classificação: {NOMES_COR[cls.cor]}. {motivos}."
+        texto = f"Resultado: {NOMES_COR[cls.cor]}. {motivos}."
         if caso.assumidos:
             texto += f" (Pior cenário assumido em: {', '.join(caso.assumidos)}.)"
 
@@ -259,7 +263,7 @@ class Agente:
         except ValueError as e:
             caso.registrar("buscar_unidades", "guardrail", entrada={"comunidade": caso.comunidade},
                            saida={"erro": str(e)})
-            texto += " Comunidade não cadastrada: contate a unidade de referência."
+            texto += " Comunidade sem tabela de distâncias: contate a unidade de referência."
         caso.historico.append(Mensagem(autor="agente", texto=texto))
         self._orientar(caso, cls)
 

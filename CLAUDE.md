@@ -65,7 +65,7 @@ LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000
 - `qwen3:8b` (Q4_K_M) no Ollama 0.34. Mac arm64, 24 GB.
 - **Raciocínio desligado** com `reasoning_effort="none"` (25 s → 3 s). `extra_body={"think": False}` NÃO funciona.
 - Placar: JSON 5/5, acerto 95%, ~3 s/chamada. Coleta ~2-3 s por turno; orientação ~4-9 s.
-- `--sem-reescrever` / `LLM_REESCREVE_PERGUNTA=0`: pergunta padrão sem LLM (plano B se lento).
+- Perguntas são as do código (`PERGUNTAS` em regras.py): `LLM_REESCREVE_PERGUNTA=0` é o padrão. Uma ideia por pergunta, para Sim/Não/Não sei terem um sentido só.
 
 ## Estado (atualizar ao avançar)
 - [x] 1. Cliente Ollama + teste de modelo
@@ -86,4 +86,5 @@ LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000
 - Laranja/amarelo em `regras.py` são PROPOSTA; validar com a equipe.
 - `RAG_LIMIAR=0.5` é chute: calibrar com os PDFs reais (`rag.buscar ... --limiar -99`).
 - `fontes.json`: URLs vazias; o amigo preenche. Fonte de peçonhentos adicionada (não estava no plano).
-- O qwen3 marca `crescendo_ou_sangrando` quando há gengiva/nariz/urina sangrando (3/3 nos testes): próxima melhoria é dividir o campo em "roxo crescendo" e "ferida que não para de sangrar".
+- Campo antigo `crescendo_ou_sangrando` foi dividido: `crescendo` (perguntado) e `sangramento_nao_para` (alerta só se o ACS falar).
+- Comunidade é digitada; `resolver_comunidade` casa com a tabela sem acento. Fora da tabela: sem destino, "contate a unidade de referência".

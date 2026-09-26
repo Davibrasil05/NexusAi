@@ -5,6 +5,10 @@ import { reduzirFoto } from "../api";
 export default function TelaInicio({ comunidades, dados, setDados, onComecar, ocupado, onErro }) {
   const inputFoto = useRef(null);
   const { comunidade, idade, foto } = dados;
+  // Sugere as comunidades cadastradas enquanto o ACS digita (sem acento e sem maiúscula).
+  const chave = (t) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  const digitado = chave(comunidade);
+  const sugestoes = comunidades.filter((c) => chave(c) !== digitado && (!digitado || chave(c).includes(digitado)));
   const mudarIdade = (d) => setDados({ ...dados, idade: Math.max(0, Math.min(120, (Number(idade) || 0) + d)) });
 
   async function escolherFoto(e) {
@@ -26,37 +30,34 @@ export default function TelaInicio({ comunidades, dados, setDados, onComecar, oc
             <Stethoscope className="size-7" />
           </div>
           <h2 className="text-[26px] font-bold leading-tight tracking-tight">Novo atendimento</h2>
-          <p className="mt-1 text-white/85">Responda o que souber. O agente faz as perguntas e mostra para onde levar.</p>
+          <p className="mt-1 text-white/85">Conte o que aconteceu com a pessoa. O assistente faz algumas perguntas e mostra a gravidade, para onde levar e o que fazer.</p>
         </section>
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
-          <fieldset>
-            <legend className="mb-3 font-bold">Comunidade</legend>
-            <div className="grid gap-2.5">
-              {comunidades.map((c) => {
-                const marcada = comunidade === c;
-                return (
-                  <label
-                    key={c}
-                    className={`flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border-2 px-4 py-3 font-semibold transition ${
-                      marcada ? "border-roxo-600 bg-roxo-50 text-roxo-800" : "border-linha bg-white"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="comunidade"
-                      value={c}
-                      checked={marcada}
-                      onChange={() => setDados({ ...dados, comunidade: c })}
-                      className="size-5 accent-roxo-600"
-                    />
-                    <MapPin className={`size-5 ${marcada ? "text-roxo-600" : "text-suave"}`} />
-                    {c}
-                  </label>
-                );
-              })}
+          <label htmlFor="comunidade" className="mb-3 block font-bold">Comunidade da pessoa atendida</label>
+          <div className="relative">
+            <MapPin className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-suave" />
+            <input
+              id="comunidade"
+              type="text"
+              autoComplete="off"
+              enterKeyHint="done"
+              placeholder="Escreva o nome da comunidade"
+              value={comunidade}
+              onChange={(e) => setDados({ ...dados, comunidade: e.target.value })}
+              className="h-14 w-full rounded-2xl border-2 border-linha bg-white pl-12 pr-4 font-semibold outline-none placeholder:font-normal focus:border-roxo-600 focus:ring-4 focus:ring-roxo-100"
+            />
+          </div>
+          {sugestoes.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {sugestoes.map((c) => (
+                <button key={c} type="button" onClick={() => setDados({ ...dados, comunidade: c })}
+                  className="min-h-11 rounded-full border-2 border-roxo-200 bg-roxo-50 px-4 text-[15px] font-semibold text-roxo-800 active:bg-roxo-100">
+                  {c}
+                </button>
+              ))}
             </div>
-          </fieldset>
+          )}
         </section>
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
@@ -89,11 +90,11 @@ export default function TelaInicio({ comunidades, dados, setDados, onComecar, oc
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
           <p className="mb-3 font-bold">
-            Foto do roxo <span className="font-normal text-suave">(opcional)</span>
+            Foto da mancha <span className="font-normal text-suave">(opcional)</span>
           </p>
           {foto ? (
             <div className="flex items-center gap-4">
-              <img src={foto} alt="Foto do hematoma" className="size-20 rounded-2xl object-cover" />
+              <img src={foto} alt="Foto da mancha roxa" className="size-20 rounded-2xl object-cover" />
               <button type="button" onClick={() => setDados({ ...dados, foto: null })}
                 className="flex min-h-12 items-center gap-2 font-semibold text-roxo-700">
                 <Trash2 className="size-5" /> Remover foto
@@ -112,11 +113,11 @@ export default function TelaInicio({ comunidades, dados, setDados, onComecar, oc
       <footer className="border-t border-linha bg-white p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
         <button
           type="button"
-          disabled={!comunidade || ocupado}
+          disabled={comunidade.trim().length < 2 || ocupado}
           onClick={onComecar}
           className="flex h-14 w-full items-center justify-center rounded-2xl bg-roxo-600 text-[19px] font-bold text-white shadow-lg shadow-roxo-600/25 transition active:bg-roxo-800 disabled:bg-roxo-200 disabled:shadow-none"
         >
-          {ocupado ? "Abrindo…" : comunidade ? "Começar triagem" : "Escolha a comunidade"}
+          {ocupado ? "Abrindo…" : comunidade.trim().length >= 2 ? "Começar triagem" : "Escreva a comunidade"}
         </button>
       </footer>
     </>

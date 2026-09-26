@@ -12,7 +12,7 @@ ORDEM_COR = {"verde": 0, "amarelo": 1, "laranja": 2, "vermelho": 3}
 
 # Campos que, uma vez SIM (ou "nao_sei"), o LLM não consegue mais trocar para NÃO.
 CAMPOS_ALERTA = {
-    "sinais_cabeca", "dor_forte_ou_falta_ar", "deformidade", "crescendo_ou_sangrando",
+    "sinais_cabeca", "dor_forte_ou_falta_ar", "deformidade", "crescendo", "sangramento_nao_para",
     "febre", "sangramento_mucosa", "petequias", "picada_cobra", "cansaco_palidez", "anticoagulante",
 }
 
@@ -23,21 +23,22 @@ PIOR_CENARIO = {
     "mecanismo": "queda_altura",
 }  # campos sim/não não listados aqui viram "nao_sei" (tratado como SIM)
 
+# Uma ideia por pergunta, para "Sim", "Não" e "Não sei" terem um sentido só.
 PERGUNTAS = {
-    "pancada": "Conte o que aconteceu. Teve pancada ou queda?",
-    "local": "Onde fica o hematoma: cabeça, peito, barriga, braço ou perna?",
-    "mecanismo": "Como foi a pancada: queda de altura, acidente de barco ou de moto, ou uma pancada leve?",
-    "sinais_cabeca": "Depois da pancada na cabeça, teve vômito, sonolência ou confusão?",
-    "dor_forte_ou_falta_ar": "Está com dor forte na barriga ou falta de ar?",
-    "deformidade": "O braço ou a perna ficou torto, frio ou com cor azulada?",
-    "mexe_apoia": "Consegue mexer e apoiar o braço ou a perna?",
-    "crescendo_ou_sangrando": "O hematoma está crescendo rápido ou tem algum sangramento que não para?",
-    "febre": "Teve febre nos últimos dias?",
-    "sangramento_mucosa": "Tem sangramento na gengiva, no nariz ou na urina?",
+    "pancada": "O que aconteceu? Teve alguma pancada ou queda?",
+    "local": "Em que parte do corpo está a mancha roxa?",
+    "mecanismo": "Como foi a pancada?",
+    "sinais_cabeca": "Depois da pancada, a pessoa vomitou, ficou muito sonolenta ou confusa?",
+    "dor_forte_ou_falta_ar": "A pessoa está com dor forte na barriga ou falta de ar?",
+    "deformidade": "O braço ou a perna ficou torto, frio ou azulado?",
+    "mexe_apoia": "A pessoa consegue mexer e apoiar o braço ou a perna?",
+    "crescendo": "A mancha roxa está aumentando rápido?",
+    "febre": "A pessoa teve febre nos últimos dias?",
+    "sangramento_mucosa": "Está saindo sangue da gengiva, do nariz ou no xixi?",
     "petequias": "Apareceram pontinhos vermelhos na pele?",
-    "picada_cobra": "Teve picada de cobra recente?",
-    "cansaco_palidez": "Está com cansaço fora do normal ou pálida?",
-    "anticoagulante": "Usa AAS, Melhoral ou algum remédio para afinar o sangue?",
+    "picada_cobra": "Teve picada de cobra nos últimos dias?",
+    "cansaco_palidez": "A pessoa está muito cansada ou pálida?",
+    "anticoagulante": "A pessoa toma AAS, Melhoral ou outro remédio para afinar o sangue?",
 }
 
 
@@ -62,14 +63,14 @@ def campos_necessarios(c: CamposCaso) -> list[str]:
             ordem.append("sinais_cabeca")
         if c.local in ("torax", "barriga"):
             ordem.append("dor_forte_ou_falta_ar")
-        ordem.append("crescendo_ou_sangrando")
+        ordem.append("crescendo")
         if c.local in ("braco", "perna"):
             ordem += ["deformidade", "mexe_apoia"]
         ordem += ["mecanismo", "anticoagulante"]
         return ordem
     return [
-        "picada_cobra", "febre", "sangramento_mucosa", "crescendo_ou_sangrando",
-        "petequias", "cansaco_palidez", "anticoagulante",
+        "febre", "sangramento_mucosa", "crescendo", "petequias",
+        "picada_cobra", "cansaco_palidez", "anticoagulante",
     ]
 
 
@@ -86,23 +87,25 @@ def sinais_de_alerta(c: CamposCaso) -> list[tuple[str, list[str]]]:
     trauma = c.pancada is True
     espontaneo = c.pancada is False
     if trauma and c.local == "cabeca" and sim(c.sinais_cabeca):
-        alertas.append(("Vômito, sonolência ou confusão após pancada na cabeça", ["tomografia"]))
+        alertas.append(("Vômito, sono forte ou confusão depois de pancada na cabeça", ["tomografia"]))
     if trauma and c.local in ("torax", "barriga") and sim(c.dor_forte_ou_falta_ar):
-        alertas.append(("Dor forte na barriga ou falta de ar após trauma", ["tomografia", "centro_cirurgico"]))
+        alertas.append(("Dor forte na barriga ou falta de ar depois da pancada", ["tomografia", "centro_cirurgico"]))
     if trauma and c.local in ("braco", "perna") and (sim(c.deformidade) or c.mexe_apoia is False or c.mexe_apoia == "nao_sei"):
-        alertas.append(("Membro deformado, frio ou sem movimento", ["raio_x"]))
+        alertas.append(("Braço ou perna torto, frio ou sem conseguir mexer", ["raio_x"]))
     if espontaneo and sim(c.febre) and sim(c.sangramento_mucosa):
         alertas.append((
-            "Manchas espontâneas com febre e sangramento de mucosa (sinal de alarme de dengue)",
+            "Mancha roxa sem pancada, com febre e sangue na gengiva, nariz ou xixi (sinal de alarme da dengue)",
             ["exame_sangue", "hidratacao_venosa"],
         ))
     if sim(c.picada_cobra):
-        alertas.append(("Hematoma depois de picada de cobra", ["soro_antiofidico"]))
+        alertas.append(("Mancha roxa depois de picada de cobra", ["soro_antiofidico"]))
     # por último: é o alerta mais genérico, os específicos aparecem primeiro como motivo
-    if sim(c.crescendo_ou_sangrando):
-        # com trauma: pode ser sangramento interno (cirurgia); sem trauma: investigar coagulação (exame de sangue)
-        alertas.append(("Hematoma crescendo rápido ou sangramento que não para",
-                        ["exame_sangue", "centro_cirurgico"] if trauma else ["exame_sangue"]))
+    # com trauma: pode ser sangramento interno (cirurgia); sem trauma: investigar coagulação (exame de sangue)
+    recursos_sangue = ["exame_sangue", "centro_cirurgico"] if trauma else ["exame_sangue"]
+    if sim(c.crescendo):
+        alertas.append(("Mancha roxa aumentando rápido", recursos_sangue))
+    if sim(c.sangramento_nao_para):
+        alertas.append(("Sangramento que não para", recursos_sangue))
     return alertas
 
 
@@ -121,27 +124,27 @@ def _criterios_sem_alerta(c: CamposCaso, idade: int | None) -> list[tuple[str, s
             crit.append(("laranja", "Pancada na cabeça em pessoa idosa", ["tomografia"]))
         # PROPOSTA amarelo
         if c.local == "cabeca":
-            crit.append(("amarelo", "Pancada na cabeça sem sinal de alerta: precisa de avaliação", ["consulta"]))
+            crit.append(("amarelo", "Pancada na cabeça sem sinal de alerta: precisa ser avaliada", ["consulta"]))
         if c.local in ("torax", "barriga"):
-            crit.append(("amarelo", "Pancada no tronco sem sinal de alerta: precisa de avaliação", ["consulta"]))
+            crit.append(("amarelo", "Pancada no peito ou na barriga sem sinal de alerta: precisa ser avaliada", ["consulta"]))
         if sim(c.anticoagulante):
-            crit.append(("amarelo", "Usa remédio que afina o sangue", ["consulta"]))
+            crit.append(("amarelo", "Toma remédio que afina o sangue", ["consulta"]))
         if not crit:
-            crit.append(("verde", "Pancada leve em braço ou perna, mexe normal, sem sinal de alerta", []))
+            crit.append(("verde", "Pancada leve no braço ou na perna, mexe normal e sem sinal de alerta", []))
         return crit
 
     # sem pancada (espontâneo)
     if sim(c.febre):
-        crit.append(("laranja", "Mancha roxa sem pancada e com febre: suspeita de dengue",
+        crit.append(("laranja", "Mancha roxa sem pancada e com febre: pode ser dengue",
                      ["exame_sangue", "hidratacao_venosa"]))
     if sim(c.sangramento_mucosa) or sim(c.petequias):
-        crit.append(("laranja", "Sangramento ou pontinhos vermelhos sem causa aparente", ["exame_sangue"]))
+        crit.append(("laranja", "Sangue na gengiva, nariz ou xixi, ou pontinhos vermelhos, sem motivo", ["exame_sangue"]))
     if sim(c.cansaco_palidez):
-        crit.append(("amarelo", "Mancha roxa sem pancada com cansaço ou palidez", ["exame_sangue"]))
+        crit.append(("amarelo", "Mancha roxa sem pancada, com cansaço ou palidez", ["exame_sangue"]))
     if sim(c.anticoagulante):
-        crit.append(("amarelo", "Mancha roxa sem pancada em quem usa remédio que afina o sangue", ["consulta"]))
+        crit.append(("amarelo", "Mancha roxa sem pancada em quem toma remédio que afina o sangue", ["consulta"]))
     if not crit:
-        crit.append(("amarelo", "Mancha roxa sem pancada: precisa de avaliação na unidade", ["consulta"]))
+        crit.append(("amarelo", "Mancha roxa sem pancada: precisa ser avaliada na unidade", ["consulta"]))
     return crit
 
 
