@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Conversa com o agente no terminal (checkpoint "agente no terminal, offline").
 
 Uso:

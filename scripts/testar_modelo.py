@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Teste do modelo local com falas de ACS em português informal.
 
 Critérios do plano técnico (o modelo precisa passar nos três):

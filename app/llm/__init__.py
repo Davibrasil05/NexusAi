@@ -1,3 +1,4 @@
+from __future__ import annotations
 from app.config import LLM_PROVEDOR
 from app.llm.base import LLM
 
