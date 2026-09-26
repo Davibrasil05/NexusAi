@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Monta o índice do RAG a partir de duas camadas:
 
 1. AUTOMÁTICA: todo documento em rag/docs é fatiado em trechos de ~120 palavras, sem cruzar

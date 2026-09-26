@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Prompts do agente. Ajuste aqui depois de rodar scripts/testar_modelo.py.
 
 Contrato: a mensagem do usuário é sempre um JSON com "tarefa" (ver app/llm/base.py).

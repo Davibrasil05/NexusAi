@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Normalização de texto compartilhada entre indexação e busca (tudo offline)."""
 import re
 

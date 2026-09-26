@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Loop de coleta do agente.
 
 Quem decide o quê:

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Extrator de campos por palavras-chave, sem LLM.
 
 Três usos:

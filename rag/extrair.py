@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Extrai o texto dos documentos de rag/docs, página por página.
 
 Aceita .pdf, .txt e .md. Em .txt/.md, o caractere de quebra de página (\\f) separa as páginas.

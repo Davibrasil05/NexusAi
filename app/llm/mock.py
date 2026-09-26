@@ -1,3 +1,4 @@
+from __future__ import annotations
 """LLM simulado: responde no mesmo contrato do modelo real, usando palavras-chave.
 
 Serve para o time desenvolver front, regras e RAG sem depender do modelo local.

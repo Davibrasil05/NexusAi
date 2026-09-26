@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Cliente do modelo local via Ollama (API no formato OpenAI).
 
 Trocar de modelo ou de servidor muda só LLM_MODELO / OLLAMA_BASE_URL.

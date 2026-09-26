@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Contrato entre o agente e qualquer modelo (mock, Ollama, MLX...).
 
 O agente só conhece esta interface. Trocar de modelo = trocar a implementação.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Schemas Pydantic: o caso, as respostas do LLM e o resultado da triagem.
 
 Tudo que vem do LLM passa por um destes modelos antes de ser usado.
