@@ -34,15 +34,18 @@ RESPOSTA_BENIGNA = {
     "local": "não sei",
     "mecanismo": "pancada leve",
     "mexe_apoia": "sim, mexe normal",
+    "deformidade": "não, tá normal",
 }
 
 
 def rodar(agente: Agente, caso: dict) -> tuple:
-    c = agente.novo_caso(comunidades()[0], caso.get("idade"))
+    """caso["respostas"] (opcional) responde perguntas específicas; o resto recebe a resposta benigna."""
+    c = agente.novo_caso(caso.get("comunidade", comunidades()[0]), caso.get("idade"))
     c = agente.responder(c, caso["caso"])
     turnos = 1
+    respostas = {**RESPOSTA_BENIGNA, **caso.get("respostas", {})}
     while c.status == "coletando" and turnos < MAX_TURNOS:
-        c = agente.responder(c, RESPOSTA_BENIGNA.get(c.campo_perguntado, "não"))
+        c = agente.responder(c, respostas.get(c.campo_perguntado, "não"))
         turnos += 1
     return c, turnos
 
@@ -54,7 +57,7 @@ def main() -> int:
     casos = json.loads(GOLDEN.read_text(encoding="utf-8"))
     agente = Agente(criar_llm(a.llm))
 
-    graves_como_leves = acerto_cor = achou_trecho = sem_fonte = barradas = 0
+    graves_como_leves = acerto_cor = achou_trecho = sem_fonte = barradas = exagerou = destino_ok = com_destino = 0
     print(f"{len(casos)} casos · LLM: {agente.llm.nome}\n")
     for i, caso in enumerate(casos, 1):
         t0 = time.perf_counter()
@@ -69,15 +72,23 @@ def main() -> int:
         grave_leve = ORDEM_COR[esperada] >= ORDEM_COR["laranja"] and ORDEM_COR.get(obtida, -1) < ORDEM_COR[esperada]
         graves_como_leves += grave_leve
         acerto_cor += obtida == esperada
+        exagerou += ORDEM_COR.get(obtida, -1) > ORDEM_COR[esperada]
+        destino = ("casa" if c.destino and c.destino.em_casa else c.destino.unidade_id) if c.destino else None
+        dest_esp = caso.get("destino_esperado")
+        if dest_esp:
+            com_destino += 1
+            destino_ok += destino == dest_esp
         achou_trecho += bool(achados) or not esperados
         if o and o.status == "ok" and not o.citacoes:
             sem_fonte += 1
         if o and o.status == "so_trechos":
             barradas += 1
 
-        marca = "✗ GRAVE COMO LEVE" if grave_leve else ("✓" if obtida == esperada else "≠")
+        marca = "✗ GRAVE COMO LEVE" if grave_leve else ("✓" if obtida == esperada else "↑ exagerou" if ORDEM_COR.get(obtida, -1) > ORDEM_COR[esperada] else "≠")
         print(f"{i:>2}. {marca:<18} esperado {esperada:<8} obtido {obtida:<8} "
               f"{turnos} turno(s) {time.perf_counter() - t0:5.1f}s  {caso['caso'][:60]!r}")
+        if dest_esp and destino != dest_esp:
+            print(f"    destino {destino} (esperado {dest_esp})")
         print(f"    trechos esperados {len(achados)}/{len(esperados)} {esperados}"
               f" | recuperados {ids} | orientação {o.status if o else '—'}")
         if o and o.problemas_verificador:
@@ -87,6 +98,8 @@ def main() -> int:
     print("\n=== Placar ===")
     print(f"Casos graves classificados como leves: {graves_como_leves}  (meta: 0)")
     print(f"Cor exata:                             {acerto_cor}/{n}")
+    print(f"Cor mais grave que o esperado:         {exagerou}  (seguro, mas manda gente à toa)")
+    print(f"Destino certo:                         {destino_ok}/{com_destino}")
     print(f"Algum trecho esperado recuperado:      {achou_trecho}/{n}  (meta: {round(n * 12 / 15)}/{n})")
     print(f"Orientações sem fonte:                 {sem_fonte}  (meta: 0)")
     print(f"Orientações barradas pelo verificador: {barradas}")

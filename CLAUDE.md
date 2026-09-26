@@ -44,7 +44,8 @@ scripts/conversar.py      agente no terminal (--llm ollama --passos --roteiro "a
 
 ## Comandos
 ```bash
-.venv/bin/python avaliacao/avaliar.py [--llm ollama]   # golden.json; sai com erro se grave virar leve
+.venv/bin/python avaliacao/avaliar.py [--llm ollama]            # golden.json (24 casos): cor, destino, trechos
+.venv/bin/python avaliacao/avaliar_extracao.py [--llm ollama]   # extracao.json (34 falas): entendimento campo a campo
 LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000
 .venv/bin/python scripts/conversar.py --llm ollama --passos
 .venv/bin/python scripts/testar_modelo.py qwen3:8b
@@ -71,7 +72,7 @@ LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000
 - [x] 4. Orientação: RAG → LLM → verificador (testado com índice de teste; **índice real vazio** até o amigo alimentar)
 - [x] 5. API FastAPI + ficha (SQLite dados/fichas.db) + fila offline + sinal simulado. Contrato: `API.md`
 - [x] 6. Front React + Tailwind 4 (Vite) em `front/`; build versionado em `web/` (a API serve em /web/, painel em /web/#/painel)
-- [x] 7. `avaliacao/avaliar.py` roda o golden.json do Carlos (5 casos; meta 15). Placar: 0 grave como leve
+- [x] 7. Testes: golden.json 24 casos (5 do Carlos + 19) e extracao.json 34 falas
 - [ ] 8. Ensaio offline + vídeo de backup (~13h)
 
 ## Compatibilidade
