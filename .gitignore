@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# gerado por python -m rag.indexar
+rag/indice/
+
+dados/fotos/*
+!dados/fotos/.gitkeep
+dados/*.db

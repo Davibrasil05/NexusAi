@@ -1,0 +1,38 @@
+[
+  {
+    "id": "dengue_manejo",
+    "titulo": "Dengue: diagnóstico e manejo clínico (adulto e criança) – Ministério da Saúde",
+    "arquivo": "dengue_manejo.pdf",
+    "url": "",
+    "padrao": { "subtipo": "espontaneo", "condicao": "dengue" },
+    "ignorar_paginas": [],
+    "secoes": []
+  },
+  {
+    "id": "sbv_samu",
+    "titulo": "Protocolos de Suporte Básico de Vida – SAMU 192",
+    "arquivo": "sbv_samu.pdf",
+    "url": "",
+    "padrao": { "subtipo": "traumatico" },
+    "ignorar_paginas": [],
+    "secoes": []
+  },
+  {
+    "id": "cab28",
+    "titulo": "Cadernos de Atenção Básica nº 28 – Acolhimento à demanda espontânea",
+    "arquivo": "cab28.pdf",
+    "url": "",
+    "padrao": { "subtipo": "geral" },
+    "ignorar_paginas": [],
+    "secoes": []
+  },
+  {
+    "id": "peconhentos",
+    "titulo": "Manual de diagnóstico e tratamento de acidentes por animais peçonhentos – Ministério da Saúde",
+    "arquivo": "peconhentos.pdf",
+    "url": "",
+    "padrao": { "subtipo": "geral", "condicao": "cobra" },
+    "ignorar_paginas": [],
+    "secoes": []
+  }
+]

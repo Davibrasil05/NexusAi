@@ -1,0 +1,12 @@
+[
+  {
+    "id": "dengue_nao_fazer_01",
+    "texto": "COLE AQUI o texto copiado do PDF, igual ao original (o validador confere na página)",
+    "fonte": "dengue_manejo",
+    "pagina": 12,
+    "tipo": "nao_fazer",
+    "subtipo": "espontaneo",
+    "condicao": "dengue",
+    "palavras_chave": ["mancha roxa", "roxo", "remedio", "aas", "melhoral"]
+  }
+]

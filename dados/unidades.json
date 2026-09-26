@@ -1,0 +1,43 @@
+{
+  "_aviso": "Unidades e comunidades FICTÍCIAS para a demo. Tempos em minutos de barco.",
+  "recursos_nomes": {
+    "consulta": "consulta",
+    "curativo": "curativo",
+    "raio_x": "raio-X",
+    "exame_sangue": "exame de sangue",
+    "hidratacao_venosa": "hidratação na veia",
+    "observacao": "leito de observação",
+    "soro_antiofidico": "soro antiofídico",
+    "tomografia": "tomografia",
+    "centro_cirurgico": "centro cirúrgico",
+    "uti": "UTI"
+  },
+  "comunidades": ["São João do Lago", "Boa Esperança", "Santa Luzia do Paraná"],
+  "unidades": [
+    {
+      "id": "ubs_boa_esperanca",
+      "nome": "UBS Boa Esperança",
+      "recursos": ["consulta", "curativo"],
+      "tempo_barco_min": { "São João do Lago": 30, "Boa Esperança": 10, "Santa Luzia do Paraná": 50 }
+    },
+    {
+      "id": "ubs_polo_santa_luzia",
+      "nome": "UBS Polo Santa Luzia",
+      "recursos": ["consulta", "curativo", "raio_x"],
+      "tempo_barco_min": { "São João do Lago": 70, "Boa Esperança": 60, "Santa Luzia do Paraná": 10 }
+    },
+    {
+      "id": "unidade_mista_vila_nova",
+      "nome": "Unidade Mista de Vila Nova",
+      "recursos": ["consulta", "curativo", "raio_x", "exame_sangue", "hidratacao_venosa", "observacao", "soro_antiofidico"],
+      "tempo_barco_min": { "São João do Lago": 120, "Boa Esperança": 100, "Santa Luzia do Paraná": 90 }
+    },
+    {
+      "id": "hospital_regional",
+      "nome": "Hospital Regional (sede do município)",
+      "recursos": ["consulta", "curativo", "raio_x", "exame_sangue", "hidratacao_venosa", "observacao",
+                   "soro_antiofidico", "tomografia", "centro_cirurgico", "uti"],
+      "tempo_barco_min": { "São João do Lago": 300, "Boa Esperança": 270, "Santa Luzia do Paraná": 240 }
+    }
+  ]
+}
