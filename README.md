@@ -16,7 +16,7 @@ protocolos é local (BM25) e a ficha fica numa fila até haver sinal.
 
 1. [Em uma frase: quem decide o quê](#em-uma-frase-quem-decide-o-quê)
 2. [**Fluxo do agente: inputs, lógica e outputs**](#fluxo-do-agente-inputs-lógica-e-outputs)
-   - [Diagrama](#diagrama)
+   - [Visão geral](#visão-geral)
    - [Inputs](#inputs)
    - [Lógica, passo a passo](#lógica-passo-a-passo)
    - [Outputs](#outputs)
@@ -42,61 +42,27 @@ protocolos é local (BM25) e a ficha fica numa fila até haver sinal.
 
 ## Fluxo do agente: inputs, lógica e outputs
 
-### Diagrama
+### Visão geral
 
 ```mermaid
 flowchart TD
-  A["ACS abre o atendimento<br/>comunidade, idade, foto"]:::pessoa --> Q1["1ª pergunta, fixa:<br/>O que aconteceu? Teve pancada ou queda?"]:::codigo
-  Q1 --> R["ACS responde<br/>(botão ou texto livre)"]:::pessoa
-
-  subgraph S1 ["1. Coleta: repete a cada resposta"]
-    R --> L["atualizar_caso<br/>LLM transforma a fala em campos (JSON)"]:::llm
-    L --> V{"JSON válido?"}:::guard
-    V -->|"não, 1ª vez"| L
-    V -->|"não, 2ª vez"| PB["Plano B:<br/>extrator por palavras-chave"]:::guard
-    V -->|"sim"| EV["Evidência:<br/>alerta não mencionado não vira não"]:::guard
-    EV --> RS["Rede de segurança:<br/>alerta escrito na fala vira SIM"]:::guard
-    PB --> RS
-    RS --> AR{"avaliar_risco<br/>tem sinal de alerta?"}:::codigo
-    AR -->|"não, e ainda falta campo"| P["Próxima pergunta<br/>(texto fixo das regras)"]:::codigo
-    P --> R
-  end
-
-  AR -->|"sim"| RED["VERMELHO na hora<br/>sem terminar a coleta"]:::vermelho
-  AR -->|"não, campos completos"| COR["Regras dão a cor e o motivo"]:::codigo
-
-  subgraph S2 ["2. Destino"]
-    D["buscar_unidades<br/>recurso necessário + tempo de barco"]:::codigo
-  end
-  RED --> D
-  COR --> D
-
-  subgraph S3 ["3. Orientação"]
-    D --> K["buscar_protocolo<br/>filtro pelo caso + BM25 + nota mínima"]:::rag
-    K --> T{"algum trecho passou?"}:::guard
-    T -->|"não"| SEM["Sem protocolo:<br/>contate a unidade"]:::guard
-    T -->|"sim"| G["LLM escreve a fala<br/>citando o id de cada trecho"]:::llm
-    G --> VER{"Verificador:<br/>fonte em toda frase,<br/>remédio e dose só dos trechos"}:::guard
-    VER -->|"reprovado"| ORIG["Mostra só os trechos originais"]:::guard
-    VER -->|"aprovado"| FALA["Fala simples + trechos<br/>com fonte e página"]:::rag
-  end
-
-  FALA --> OK["ACS revisa e confirma"]:::pessoa
-  ORIG --> OK
-  SEM --> OK
-  OK --> FI["gerar_ficha"]:::codigo
-  FI --> FILA[("Fila no aparelho")]:::codigo
-  FILA -->|"quando há sinal"| PAINEL["Painel da unidade"]:::pessoa
-
-  classDef llm fill:#EFDFFC,stroke:#820AD1,stroke-width:2px,color:#1E1530
-  classDef codigo fill:#E1EEF0,stroke:#0E4A52,stroke-width:2px,color:#10292D
-  classDef rag fill:#E4F2E1,stroke:#3F7A3A,stroke-width:2px,color:#152B13
-  classDef guard fill:#FFF0D2,stroke:#A8720F,stroke-width:2px,color:#33230A
-  classDef pessoa fill:#ECE8E3,stroke:#5E5147,stroke-width:2px,color:#231D18
-  classDef vermelho fill:#FBE1DE,stroke:#B3261E,stroke-width:3px,color:#3A0B08
+  A[ACS conta o que aconteceu] --> B[Assistente faz as perguntas que faltam]
+  B --> C{Tem sinal de alerta?}
+  C -->|sim| V[Vermelho na hora]
+  C -->|não| D[Regras dão a cor]
+  V --> E[Destino: unidade com o recurso]
+  D --> E
+  E --> F[Orientação com trecho do protocolo]
+  F --> G[ACS confere e confirma]
+  G --> H[(Ficha vai para a unidade quando há sinal)]
+  class B,F ia
+  class V alerta
+  classDef ia fill:#EFDFFC,stroke:#820AD1,color:#2A0A45
+  classDef alerta fill:#FDE3E1,stroke:#C62828,color:#4A0B08
 ```
 
-Legenda: roxo = LLM · azul = código e regras · verde = protocolo (RAG) · âmbar = proteção · cinza = pessoas.
+Roxo: etapas em que a IA local participa. Todo o resto é regra fixa em código ou decisão do ACS.
+Os detalhes de cada etapa estão em [Lógica, passo a passo](#lógica-passo-a-passo).
 
 ### Inputs
 
@@ -141,6 +107,22 @@ queda?"), porque ela divide o atendimento em dois caminhos: **com pancada** (tra
 (doença: dengue, coagulação, picada de cobra).
 
 #### 2. Coleta (repete a cada resposta)
+
+```mermaid
+flowchart TD
+  R[Resposta do ACS] --> L[IA transforma a fala em campos]
+  L --> P[Proteções conferem os campos]
+  P --> A{Sinal de alerta?}
+  A -->|sim| V[Encerra em vermelho]
+  A -->|não| F{Falta algum campo?}
+  F -->|sim| Q[Próxima pergunta]
+  Q --> R
+  F -->|não| C[Calcula a cor]
+  class L ia
+  class V alerta
+  classDef ia fill:#EFDFFC,stroke:#820AD1,color:#2A0A45
+  classDef alerta fill:#FDE3E1,stroke:#C62828,color:#4A0B08
+```
 
 1. **`atualizar_caso` (LLM):** a fala do ACS vai para o modelo junto com o estado do caso e a
    pergunta feita. O modelo devolve **só JSON**: `{"acao": "atualizar_caso", "campos": {...}}`.
@@ -195,6 +177,20 @@ referência".
 > estar a 2 h de rabeta. O tempo depende da cheia/seca, da correnteza e do barco.
 
 #### 5. Orientação (`buscar_protocolo` + LLM + verificador)
+
+```mermaid
+flowchart TD
+  C[Caso classificado] --> B[Busca trechos do protocolo filtrados pelo caso]
+  B --> T{Achou trecho?}
+  T -->|não| S[Sem protocolo: contate a unidade]
+  T -->|sim| L[IA escreve citando cada trecho]
+  L --> V{Verificador aprova?}
+  V -->|sim| O[Fala simples + fontes]
+  V -->|não| X[Só os trechos originais]
+  class L ia
+  classDef ia fill:#EFDFFC,stroke:#820AD1,color:#2A0A45
+  classDef alerta fill:#FDE3E1,stroke:#C62828,color:#4A0B08
+```
 
 1. **Filtro pelo caso**, não pela pergunta livre: caminho (com/sem pancada) e condição (cabeça,
    membro, dengue, cobra, remédio). Caso vermelho ou laranja **nunca** recebe trecho de "quando voltar"
