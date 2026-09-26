@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Monta o índice do RAG a partir de duas camadas:
 
 1. AUTOMÁTICA: todo documento em rag/docs é fatiado em trechos de ~120 palavras, sem cruzar
@@ -11,6 +10,7 @@ O validador confere se o texto de cada trecho curado aparece de verdade na pági
 
 Uso: python -m rag.indexar
 """
+from __future__ import annotations
 import json
 import re
 import sys
@@ -26,6 +26,7 @@ SAIDA = RAG_DIR / "indice" / "trechos.jsonl"
 TIPOS = {"primeiros_cuidados", "nao_fazer", "sinais_de_alerta", "quando_voltar", "informacao"}
 SUBTIPOS = {"traumatico", "espontaneo", "geral"}
 CONDICOES = {"cabeca", "tronco", "membro", "dengue", "cobra", "anticoagulante"}
+CORES = {"vermelho", "laranja", "amarelo", "verde"}
 OBRIGATORIOS = ("id", "texto", "fonte", "pagina", "tipo", "subtipo")
 
 ALVO_PALAVRAS = 120
@@ -151,6 +152,10 @@ def trechos_curados(fontes: list[dict], paginas: list[dict], curados_dir: Path =
             if item["subtipo"] not in SUBTIPOS:
                 erros.append(f"{onde}: subtipo '{item['subtipo']}' inválido; use {sorted(SUBTIPOS)}")
                 continue
+            cores = item.get("cores")
+            if cores is not None and (not isinstance(cores, list) or set(cores) - CORES):
+                erros.append(f"{onde}: cores {cores!r} inválidas; use uma lista com {sorted(CORES)}")
+                continue
             cond = item.get("condicao")
             if cond is not None and cond not in CONDICOES:
                 avisos.append(f"{onde}: condição nova '{cond}' (ok, mas o agente só filtra por {sorted(CONDICOES)})")
@@ -177,6 +182,7 @@ def trechos_curados(fontes: list[dict], paginas: list[dict], curados_dir: Path =
                 "texto": item["texto"],
                 "palavras_chave": item.get("palavras_chave", []),
                 "conferido": conferido,  # texto achado na página citada do PDF
+                "cores": cores,  # None = vale para qualquer cor
             })
     return trechos, erros, avisos
 

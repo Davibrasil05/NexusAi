@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Regras de risco em código puro: sinais de alerta, cor, motivo e campos que faltam.
 
 O LLM NUNCA decide a cor. Estas funções são determinísticas e testadas pelo avaliacao/avaliar.py.
@@ -6,6 +5,7 @@ O LLM NUNCA decide a cor. Estas funções são determinísticas e testadas pelo 
 Vermelho e verde seguem o plano técnico. Laranja e amarelo são uma PROPOSTA
 para a equipe validar (ver comentários "PROPOSTA").
 """
+from __future__ import annotations
 from app.modelos import CamposCaso, Classificacao
 
 ORDEM_COR = {"verde": 0, "amarelo": 1, "laranja": 2, "vermelho": 3}

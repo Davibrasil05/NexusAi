@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Teste do modelo local com falas de ACS em português informal.
 
 Critérios do plano técnico (o modelo precisa passar nos três):
@@ -10,6 +9,7 @@ Uso:
   python scripts/testar_modelo.py                      # usa LLM_MODELO
   python scripts/testar_modelo.py qwen3:8b gemma3:12b  # compara vários
 """
+from __future__ import annotations
 import json
 import sys
 import time

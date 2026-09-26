@@ -6,10 +6,12 @@
 Contrato das rotas para o front: API.md.
 As rotas são 'def' (não async): a chamada ao modelo bloqueia e roda no threadpool do FastAPI.
 """
+from __future__ import annotations
 import base64
 import binascii
 import re
 import threading
+from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,6 +23,7 @@ from app.agente import Agente, CasoEncerrado
 from app.config import FOTOS, WEB
 from app.llm import criar_llm
 from app.modelos import Caso, EstadoSinal, NovaFoto, NovaMensagem, NovoCaso
+from app.unidades import carregar as carregar_unidades
 from app.unidades import comunidades
 
 MAX_FOTO_BYTES = 5 * 1024 * 1024
@@ -46,7 +49,8 @@ def _caso(caso_id: str) -> Caso:
 
 @app.get("/api/config")
 def config():
-    return {"llm": llm.nome, "comunidades": comunidades(), "sinal": fichas.sinal_ligado()}
+    unidades = [{"id": u["id"], "nome": u["nome"]} for u in carregar_unidades()["unidades"]]
+    return {"llm": llm.nome, "comunidades": comunidades(), "unidades": unidades, "sinal": fichas.sinal_ligado()}
 
 
 # ---------- caso (tela do ACS) ----------
@@ -126,7 +130,7 @@ def mudar_sinal(estado: EstadoSinal):
 # ---------- painel da unidade ----------
 
 @app.get("/api/fichas")
-def listar_fichas(status: str | None = None, unidade: str | None = None):
+def listar_fichas(status: Optional[str] = None, unidade: Optional[str] = None):  # Optional: FastAPI avalia no 3.9
     """Painel da unidade: GET /api/fichas?status=enviada (&unidade=<id> para filtrar o destino)."""
     lista = fichas.listar(status)
     if unidade:

@@ -1,9 +1,9 @@
-from __future__ import annotations
 """buscar_protocolo: monta a busca a partir do CASO (não de pergunta livre) e escolhe os trechos.
 
 A escolha pega o melhor trecho de cada tipo (o que fazer, o que não fazer, sinais de alerta,
 quando voltar) e completa pela nota, até RAG_TOP_K.
 """
+from __future__ import annotations
 from app.config import RAG_TOP_K
 from app.modelos import CamposCaso
 from app.regras import condicoes, sim, subtipo
@@ -31,8 +31,9 @@ LOCAIS = {
 ORDEM_TIPOS = ["primeiros_cuidados", "nao_fazer", "sinais_de_alerta", "quando_voltar"]
 
 
-def montar_consulta(c: CamposCaso) -> str:
-    partes = [BASE]
+def montar_consulta(c: CamposCaso, falas_acs: str = "") -> str:
+    """Termos do caso + o que o ACS falou (ex.: "amarelado", "antigo"). Só ORDENA: o filtro vem do caso."""
+    partes = [BASE, falas_acs]
     if c.pancada and c.local:
         partes.append(LOCAIS[c.local])
     for campo, termos in TERMOS.items():
