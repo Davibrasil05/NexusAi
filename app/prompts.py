@@ -112,4 +112,8 @@ def orientar(cor: str, motivos: list[str], trechos: list[dict], aviso: str | Non
     }
     if aviso:
         pedido["aviso"] = aviso
-    return [{"role": "system", "content": SISTEMA_ORIENTAR}, {"role": "user", "content": _json(pedido)}]
+        
+    sistema = SISTEMA_ORIENTAR
+    sistema += f"\n\nO risco calculado para este paciente é {cor.upper()}. REGRA ABSOLUTA: Se o risco for VERMELHO ou LARANJA, é estritamente proibido aconselhar o paciente a ficar em observação em casa ou aguardar revisita. Use APENAS os trechos fornecidos que condizem com uma emergência médica."
+    
+    return [{"role": "system", "content": sistema}, {"role": "user", "content": _json(pedido)}]

@@ -260,6 +260,10 @@ class Agente:
         except (FileNotFoundError, ValueError) as e:
             caso.registrar("buscar_protocolo", "guardrail", saida={"erro": str(e)}, ms=_ms(t0))
             candidatos = []
+            
+        if cls.cor in ("vermelho", "laranja"):
+            candidatos = [c for c in candidatos if c["tipo"] != "quando_voltar" and c["id"] != "geral_hematoma_antigo"]
+
         trechos = orientador.escolher(candidatos)
         caso.registrar("buscar_protocolo", "rag",
                        entrada={"consulta": consulta, "subtipo": filtro["subtipo"],
