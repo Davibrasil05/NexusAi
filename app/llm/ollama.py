@@ -3,6 +3,7 @@
 Trocar de modelo ou de servidor muda só LLM_MODELO / OLLAMA_BASE_URL.
 Tudo roda em localhost: com o wi-fi desligado continua funcionando.
 """
+from __future__ import annotations
 import re
 
 from openai import BadRequestError, OpenAI

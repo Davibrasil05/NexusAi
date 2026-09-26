@@ -2,6 +2,7 @@
 
 Tudo que vem do LLM passa por um destes modelos antes de ser usado.
 """
+from __future__ import annotations
 from datetime import datetime
 from typing import Any, Literal, Optional, Union
 
@@ -37,7 +38,8 @@ class CamposCaso(BaseModel):
     picada_cobra: SimNao = None
     cansaco_palidez: SimNao = None
     # comuns aos dois caminhos
-    crescendo_ou_sangrando: SimNao = None  # hematoma crescendo rápido ou sangramento que não para
+    crescendo: SimNao = None  # a mancha roxa está aumentando rápido (perguntado)
+    sangramento_nao_para: SimNao = None  # corte/ferida que não para de sangrar (só se o ACS falar)
     anticoagulante: SimNao = None  # AAS ou remédio para afinar o sangue
 
 
@@ -153,7 +155,7 @@ class Caso(BaseModel):
 
 class NovoCaso(BaseModel):
     idade: Optional[int] = Field(default=None, ge=0, le=120)
-    comunidade: str
+    comunidade: str = Field(min_length=2, max_length=80)
 
 
 class NovaMensagem(BaseModel):

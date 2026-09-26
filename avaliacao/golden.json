@@ -1,0 +1,208 @@
+[
+  {
+    "caso": "O paciente levou uma pancada na cabeça ontem, hoje amanheceu com muito sono, confuso e vomitou duas vezes.",
+    "cor_esperada": "vermelho",
+    "trechos_esperados": [
+      "trauma_cabeca_sinais_alerta"
+    ],
+    "destino_esperado": "hospital_regional"
+  },
+  {
+    "caso": "Senhora com manchas roxas pelo corpo que apareceram do nada, teve febre alta nos últimos 4 dias e sangramento na gengiva ao escovar os dentes. O marido quer dar AAS pra dor.",
+    "cor_esperada": "vermelho",
+    "trechos_esperados": [
+      "dengue_sinais_alerta",
+      "dengue_nao_fazer_aas",
+      "dengue_cuidados_hidratacao"
+    ],
+    "destino_esperado": "unidade_mista_vila_nova"
+  },
+  {
+    "caso": "Criança levou uma pancada na canela jogando bola, fez um galo roxo, mas tá brincando normal e não tem dor forte. O que fazer?",
+    "cor_esperada": "verde",
+    "trechos_esperados": [
+      "trauma_cuidados_compressa",
+      "trauma_quando_voltar"
+    ],
+    "destino_esperado": "casa"
+  },
+  {
+    "caso": "Apareceram pontinhos vermelhos na minha pele hoje, e estou muito cansado, mas não bati em lugar nenhum.",
+    "cor_esperada": "laranja",
+    "trechos_esperados": [
+      "geral_pontinhos_vermelhos"
+    ],
+    "destino_esperado": "unidade_mista_vila_nova"
+  },
+  {
+    "caso": "Hematoma amarelado antigo na coxa, não dói, aconteceu semana passada num esbarrão na mesa.",
+    "cor_esperada": "verde",
+    "trechos_esperados": [
+      "geral_hematoma_antigo"
+    ],
+    "destino_esperado": "casa"
+  },
+  {
+    "caso": "Caiu do açaizeiro, bateu a cabeça e golfou duas vezes.",
+    "cor_esperada": "vermelho",
+    "destino_esperado": "hospital_regional",
+    "trechos_esperados": [
+      "trauma_cabeca_sinais_alerta"
+    ]
+  },
+  {
+    "caso": "Foi picado por uma jararaca no pé e o roxo tá subindo pela perna.",
+    "cor_esperada": "vermelho",
+    "destino_esperado": "unidade_mista_vila_nova",
+    "trechos_esperados": [
+      "picada_cobra_alerta"
+    ]
+  },
+  {
+    "caso": "O menino levou uma remada no braço, ficou torto e ele não mexe.",
+    "cor_esperada": "vermelho",
+    "destino_esperado": "ubs_polo_santa_luzia",
+    "trechos_esperados": [
+      "trauma_fratura_sinais"
+    ]
+  },
+  {
+    "caso": "A rabeta virou, ele bateu a barriga no casco, tá com muita dor e a barriga dura.",
+    "cor_esperada": "vermelho",
+    "destino_esperado": "hospital_regional",
+    "trechos_esperados": []
+  },
+  {
+    "caso": "Ela caiu da escada, bateu o peito e tá sem ar.",
+    "cor_esperada": "vermelho",
+    "destino_esperado": "hospital_regional",
+    "trechos_esperados": []
+  },
+  {
+    "caso": "Bateu a perna na quina da mesa ontem e o roxo tá crescendo rápido.",
+    "cor_esperada": "vermelho",
+    "destino_esperado": "hospital_regional",
+    "trechos_esperados": []
+  },
+  {
+    "caso": "Caiu e bateu a cabeça.",
+    "respostas": {
+      "sinais_cabeca": "sei não, ela tá dormindo"
+    },
+    "cor_esperada": "vermelho",
+    "destino_esperado": "hospital_regional",
+    "trechos_esperados": [
+      "trauma_cabeca_sinais_alerta"
+    ],
+    "nota": "'não sei' num sinal de alerta = pior cenário"
+  },
+  {
+    "caso": "Não vomitou, mas tá muito sonolenta depois que bateu a cabeça.",
+    "cor_esperada": "vermelho",
+    "destino_esperado": "hospital_regional",
+    "trechos_esperados": [
+      "trauma_cabeca_sinais_alerta"
+    ],
+    "nota": "negação de um sintoma não pode apagar o outro"
+  },
+  {
+    "caso": "caiu d moto e o braco ta tort",
+    "cor_esperada": "vermelho",
+    "destino_esperado": "ubs_polo_santa_luzia",
+    "trechos_esperados": [
+      "trauma_fratura_sinais"
+    ],
+    "nota": "erros de digitação"
+  },
+  {
+    "caso": "Bateu o braço e ficou torto.",
+    "comunidade": "Santa Luzia do Paraná",
+    "cor_esperada": "vermelho",
+    "destino_esperado": "ubs_polo_santa_luzia",
+    "trechos_esperados": [
+      "trauma_fratura_sinais"
+    ],
+    "nota": "outra comunidade: o polo com raio-X fica a 10 min"
+  },
+  {
+    "caso": "Caiu do jirau e machucou o braço, mas mexe normal e não tá torto.",
+    "cor_esperada": "laranja",
+    "destino_esperado": "ubs_polo_santa_luzia",
+    "trechos_esperados": [],
+    "nota": "queda de altura = alta energia"
+  },
+  {
+    "caso": "O vô bateu a cabeça na porta, tá conversando normal.",
+    "idade": 72,
+    "respostas": {
+      "sinais_cabeca": "não",
+      "mecanismo": "pancada leve"
+    },
+    "cor_esperada": "laranja",
+    "destino_esperado": "hospital_regional",
+    "trechos_esperados": [
+      "trauma_cabeca_sinais_alerta"
+    ],
+    "nota": "idoso + cabeça"
+  },
+  {
+    "caso": "Bateu a testa na quina e toma AAS pro coração.",
+    "respostas": {
+      "sinais_cabeca": "não"
+    },
+    "cor_esperada": "laranja",
+    "destino_esperado": "hospital_regional",
+    "trechos_esperados": [],
+    "nota": "cabeça + remédio que afina o sangue"
+  },
+  {
+    "caso": "Apareceu mancha roxa na perna sozinha e tá com febre faz 2 dias.",
+    "cor_esperada": "laranja",
+    "destino_esperado": "unidade_mista_vila_nova",
+    "trechos_esperados": [
+      "dengue_cuidados_hidratacao",
+      "dengue_nao_fazer_aas"
+    ],
+    "nota": "suspeita de dengue sem sinal de alarme"
+  },
+  {
+    "caso": "Apareceu roxo sozinho, a gengiva tá sangrando, febre não teve.",
+    "cor_esperada": "laranja",
+    "destino_esperado": "unidade_mista_vila_nova",
+    "trechos_esperados": [],
+    "nota": "sangramento de mucosa sem febre"
+  },
+  {
+    "caso": "Bateu a cabeça de leve na porta, tá bem.",
+    "idade": 30,
+    "respostas": {
+      "sinais_cabeca": "não",
+      "mecanismo": "pancada leve"
+    },
+    "cor_esperada": "amarelo",
+    "destino_esperado": "ubs_boa_esperanca",
+    "trechos_esperados": [
+      "trauma_cabeca_sinais_alerta"
+    ]
+  },
+  {
+    "caso": "Apareceram manchas roxas sozinhas e ela tá pálida e cansada.",
+    "cor_esperada": "amarelo",
+    "destino_esperado": "unidade_mista_vila_nova",
+    "trechos_esperados": []
+  },
+  {
+    "caso": "Mancha roxa sozinha no braço, não sente nada.",
+    "cor_esperada": "amarelo",
+    "destino_esperado": "ubs_boa_esperanca",
+    "trechos_esperados": []
+  },
+  {
+    "caso": "Bateu o braço na porta, tá roxinho, mexe normal.",
+    "cor_esperada": "verde",
+    "destino_esperado": "casa",
+    "trechos_esperados": [
+      "trauma_cuidados_compressa"
+    ]
+  }
+]

@@ -3,6 +3,7 @@
 Entre as unidades que têm todos os recursos do caso, fica a de menor tempo de barco.
 Se a mais próxima não serve, a explicação diz o que falta nela (é o que a demo mostra).
 """
+from __future__ import annotations
 import json
 from functools import lru_cache
 
@@ -19,6 +20,17 @@ def carregar() -> dict:
 
 def comunidades() -> list[str]:
     return carregar()["comunidades"]
+
+
+def resolver_comunidade(texto: str) -> str:
+    """O ACS digita a comunidade. Se bater com uma cadastrada (sem acento/maiúscula), usa o nome oficial."""
+    from unidecode import unidecode
+    chave = lambda t: " ".join(unidecode(t).lower().split())
+    digitado = chave(texto)
+    for c in comunidades():
+        if chave(c) == digitado:
+            return c
+    return " ".join(texto.split())
 
 
 def _nomes(recursos) -> str:

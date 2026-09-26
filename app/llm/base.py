@@ -13,6 +13,7 @@ A mensagem do usuário é SEMPRE um JSON com a chave "tarefa":
 O modelo devolve TEXTO. Quem faz o parse e a validação (Pydantic) é o agente.
 Se o modelo cair, demorar ou errar, o agente usa o fallback do código.
 """
+from __future__ import annotations
 from typing import Protocol
 
 

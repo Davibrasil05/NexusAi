@@ -91,7 +91,10 @@ Regras dos trechos curados:
 |------------|-------------------------------------------------------------------------|
 | `subtipo`  | `traumatico` (teve pancada) · `espontaneo` (sem pancada) · `geral` (os dois) |
 | `condicao` | `cabeca` · `tronco` · `membro` · `dengue` · `cobra` · `anticoagulante` · ou omitir (vale para todo o subtipo) |
+| `cores`    | opcional. Lista de cores em que o trecho pode aparecer, ex.: `["verde", "amarelo"]` para "pode ficar em casa". Omitir = qualquer cor |
 | `tipo`     | `primeiros_cuidados` · `nao_fazer` · `sinais_de_alerta` · `quando_voltar` · `informacao` |
+
+Em caso **vermelho ou laranja**, trechos do tipo `quando_voltar` nunca entram (não se orienta "ficar em casa" num caso grave).
 
 O filtro vem **do caso**, não da pergunta: num caso de pancada na cabeça, só entram trechos
 `traumatico`/`geral` com condição `cabeca` ou sem condição.

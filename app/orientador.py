@@ -3,6 +3,7 @@
 A escolha pega o melhor trecho de cada tipo (o que fazer, o que não fazer, sinais de alerta,
 quando voltar) e completa pela nota, até RAG_TOP_K.
 """
+from __future__ import annotations
 from app.config import RAG_TOP_K
 from app.modelos import CamposCaso
 from app.regras import condicoes, sim, subtipo
@@ -12,7 +13,8 @@ TERMOS = {
     "sinais_cabeca": "vomito sonolencia confusao traumatismo cranioencefalico",
     "dor_forte_ou_falta_ar": "dor abdominal falta de ar trauma toracico abdominal lesao interna",
     "deformidade": "fratura deformidade imobilizar",
-    "crescendo_ou_sangrando": "sangramento hemorragia compressao",
+    "crescendo": "hematoma aumentando crescendo",
+    "sangramento_nao_para": "sangramento hemorragia compressao",
     "febre": "febre dengue hidratacao",
     "sangramento_mucosa": "sangramento gengiva nariz mucosa sinais de alarme",
     "petequias": "petequias manchas vermelhas",
@@ -30,8 +32,9 @@ LOCAIS = {
 ORDEM_TIPOS = ["primeiros_cuidados", "nao_fazer", "sinais_de_alerta", "quando_voltar"]
 
 
-def montar_consulta(c: CamposCaso) -> str:
-    partes = [BASE]
+def montar_consulta(c: CamposCaso, falas_acs: str = "") -> str:
+    """Termos do caso + o que o ACS falou (ex.: "amarelado", "antigo"). Só ORDENA: o filtro vem do caso."""
+    partes = [BASE, falas_acs]
     if c.pancada and c.local:
         partes.append(LOCAIS[c.local])
     for campo, termos in TERMOS.items():

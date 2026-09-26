@@ -1,0 +1,174 @@
+[
+  {
+    "id": "dengue_nao_fazer_aas",
+    "subtipo": "espontaneo",
+    "tipo": "nao_fazer",
+    "texto": "Em caso de suspeita de dengue, não devem ser administrados medicamentos à base de ácido acetilsalicílico (AAS) e anti-inflamatórios não esteroides, devido ao risco de sangramento.",
+    "palavras_chave": [
+      "aas",
+      "aspirina",
+      "anti-inflamatório",
+      "ibuprofeno",
+      "diclofenaco",
+      "remédio para afinar o sangue",
+      "sangramento"
+    ],
+    "fonte": "dengue_manejo",
+    "pagina": 15,
+    "condicao": "dengue"
+  },
+  {
+    "id": "dengue_cuidados_hidratacao",
+    "subtipo": "espontaneo",
+    "tipo": "primeiros_cuidados",
+    "texto": "A hidratação oral abundante (com água, soro caseiro, água de coco ou chás) deve ser iniciada precocemente no caso de febre e suspeita de dengue, mesmo antes do resultado de exames.",
+    "palavras_chave": [
+      "febre",
+      "água",
+      "soro",
+      "hidratação"
+    ],
+    "fonte": "dengue_manejo",
+    "pagina": 20,
+    "condicao": "dengue"
+  },
+  {
+    "id": "dengue_sinais_alerta",
+    "subtipo": "espontaneo",
+    "tipo": "sinais_de_alerta",
+    "texto": "Os sinais de alarme da dengue incluem: dor abdominal intensa e contínua, vômitos persistentes, sangramento de mucosas (gengiva, nariz), letargia e sangramentos na pele (manchas roxas espontâneas).",
+    "palavras_chave": [
+      "vômito",
+      "sangramento",
+      "gengiva",
+      "mancha roxa",
+      "roxo",
+      "nariz",
+      "dor na barriga"
+    ],
+    "fonte": "dengue_manejo",
+    "pagina": 25,
+    "condicao": "dengue"
+  },
+  {
+    "id": "trauma_cuidados_compressa",
+    "subtipo": "traumatico",
+    "tipo": "primeiros_cuidados",
+    "texto": "Para contusões e pancadas que causam hematoma sem suspeita de fratura, aplique compressa fria ou gelo envolto em um pano no local afetado por 15 a 20 minutos para reduzir o inchaço e a dor.",
+    "palavras_chave": [
+      "pancada",
+      "batida",
+      "gelo",
+      "compressa",
+      "frio",
+      "roxo",
+      "inchaço",
+      "dor"
+    ],
+    "fonte": "sbv_samu",
+    "pagina": 80
+  },
+  {
+    "id": "trauma_cabeca_sinais_alerta",
+    "subtipo": "traumatico",
+    "tipo": "sinais_de_alerta",
+    "texto": "Após trauma na cabeça (pancada), deve-se monitorar o paciente. Vômitos, sonolência excessiva, confusão mental, dor de cabeça forte e perda de memória são sinais de alerta para Trauma Cranioencefálico (TCE) e exigem avaliação hospitalar imediata.",
+    "palavras_chave": [
+      "pancada na cabeça",
+      "batida na cabeça",
+      "vômito",
+      "sono",
+      "confusão",
+      "desmaio"
+    ],
+    "fonte": "sbv_samu",
+    "pagina": 110,
+    "condicao": "cabeca"
+  },
+  {
+    "id": "trauma_fratura_sinais",
+    "subtipo": "traumatico",
+    "tipo": "sinais_de_alerta",
+    "texto": "Sinais de possível fratura após uma pancada incluem: deformidade evidente, incapacidade de mover ou apoiar o membro afetado, e dor intensa. Nesses casos, o membro deve ser imobilizado e o paciente encaminhado à unidade de saúde (Raio-X).",
+    "palavras_chave": [
+      "não consegue pisar",
+      "não mexe",
+      "deformado",
+      "osso",
+      "dor intensa",
+      "batida"
+    ],
+    "fonte": "sbv_samu",
+    "pagina": 115,
+    "condicao": "membro"
+  },
+  {
+    "id": "trauma_quando_voltar",
+    "subtipo": "traumatico",
+    "tipo": "quando_voltar",
+    "texto": "Em casos de hematomas leves por pancada, sem sinais de alerta, o paciente pode permanecer em observação em casa. O Agente Comunitário de Saúde deve realizar uma revisita entre 24 a 48 horas para reavaliar o local.",
+    "palavras_chave": [
+      "revisita",
+      "observação",
+      "casa",
+      "verde",
+      "tranquilo"
+    ],
+    "fonte": "cab28",
+    "pagina": 42,
+    "cores": [
+      "verde",
+      "amarelo"
+    ]
+  },
+  {
+    "id": "picada_cobra_alerta",
+    "subtipo": "geral",
+    "tipo": "sinais_de_alerta",
+    "texto": "Hematomas e sangramentos no local ou sistêmicos após suspeita de picada de cobra ou animal peçonhento são emergências médicas absolutas. O paciente deve ser levado ao hospital imediatamente para possível soroterapia.",
+    "palavras_chave": [
+      "cobra",
+      "picada",
+      "inchaço rápido",
+      "roxo rápido",
+      "animal"
+    ],
+    "fonte": "sbv_samu",
+    "pagina": 150,
+    "condicao": "cobra"
+  },
+  {
+    "id": "geral_hematoma_antigo",
+    "subtipo": "traumatico",
+    "tipo": "primeiros_cuidados",
+    "texto": "Hematomas amarelados ou esverdeados, sem dor importante associada, geralmente indicam resolução de um trauma antigo e não requerem intervenção médica imediata.",
+    "palavras_chave": [
+      "amarelo",
+      "amarelado",
+      "esverdeado",
+      "antigo",
+      "semana passada",
+      "não dói"
+    ],
+    "fonte": "cab28",
+    "pagina": 45,
+    "cores": [
+      "verde",
+      "amarelo"
+    ]
+  },
+  {
+    "id": "geral_pontinhos_vermelhos",
+    "subtipo": "espontaneo",
+    "tipo": "sinais_de_alerta",
+    "texto": "O aparecimento súbito de petéquias (pontinhos vermelhos na pele) ou equimoses (manchas roxas) sem histórico de trauma, acompanhados de cansaço excessivo, deve ser avaliado por um médico para descartar distúrbios de coagulação.",
+    "palavras_chave": [
+      "pontinhos vermelhos",
+      "cansaço",
+      "do nada",
+      "sem pancada"
+    ],
+    "fonte": "cab28",
+    "pagina": 60
+  }
+]

@@ -12,6 +12,7 @@ Quem decide o quê:
 
 Cada passo fica em caso.passos (é o que o painel de raciocínio mostra).
 """
+from __future__ import annotations
 import json
 import re
 import time
@@ -29,7 +30,7 @@ from app.modelos import (AcaoAtualizar, AcaoPerguntar, CamposCaso, Caso, Mensage
                          TrechoRecuperado)
 from app.regras import CAMPOS_ALERTA, PERGUNTAS, PIOR_CENARIO, classificar
 from app.unidades import buscar_unidades
-from rag.verificar import RE_CITACAO, verificar
+from rag.verificar import RE_CITACAO, remover_frases_sem_fonte, verificar
 
 NOMES_COR = {"vermelho": "VERMELHO", "laranja": "LARANJA", "amarelo": "AMARELO", "verde": "VERDE"}
 _SIM = {"sim", "s", "true", "yes"}
@@ -79,6 +80,17 @@ def validar_campos(campos: dict) -> tuple[dict, dict]:
         except ValidationError:
             rejeitados[nome] = f"valor inválido: {valor!r}"
     return validos, rejeitados
+
+
+CAMPOS_ALERTA_E_MEXE = CAMPOS_ALERTA | {"mexe_apoia"}
+# Campos que o agente SEMPRE pergunta: um "sim" sem evidência na fala é descartado sem risco,
+# porque a pergunta vem logo em seguida. O qwen3 lê "apareceu uma mancha" como "está aumentando".
+SEMPRE_PERGUNTADOS = {"crescendo"}
+
+
+def _risco(campo: str, valor: Any) -> bool:
+    """True se o valor é o que PREOCUPA (sempre aceito do LLM): SIM; em mexe_apoia, NÃO."""
+    return valor is False if campo == "mexe_apoia" else valor is True
 
 
 def _piora(campo: str, atual: Any, novo: Any) -> bool:
@@ -168,6 +180,15 @@ class Agente:
                            saida={"llm": validos["pancada"], "palavras": por_palavras["pancada"]})
             validos = {k: v for k, v in validos.items() if k != "pancada"}
             por_palavras = {k: v for k, v in por_palavras.items() if k != "pancada"}
+        # Sinal de alerta que o ACS não mencionou: o LLM não pode "responder por ele".
+        # "Não" faria o agente nunca perguntar; "não sei" subiria o risco sem motivo.
+        # Só vale com evidência: é o campo perguntado, ou a fala menciona o campo.
+        sem_evidencia = {k: v for k, v in validos.items()
+                         if k in CAMPOS_ALERTA_E_MEXE and k != campo and k not in por_palavras
+                         and (not _risco(k, v) or k in SEMPRE_PERGUNTADOS)}
+        if sem_evidencia:
+            validos = {k: v for k, v in validos.items() if k not in sem_evidencia}
+            caso.registrar("sem_evidencia", "guardrail", entrada=texto, saida={"descartados": sem_evidencia})
         # O LLM respondeu, mas rejeitamos um valor ou ele esqueceu o campo perguntado:
         # completa só esses campos com o extrator por palavras.
         faltou = set(rejeitados) | ({campo} if campo and campo not in validos else set())
@@ -227,7 +248,7 @@ class Agente:
         caso.classificacao = cls
         caso.campo_perguntado = None
         motivos = "; ".join(cls.motivos)
-        texto = f"Classificação: {NOMES_COR[cls.cor]}. {motivos}."
+        texto = f"Resultado: {NOMES_COR[cls.cor]}. {motivos}."
         if caso.assumidos:
             texto += f" (Pior cenário assumido em: {', '.join(caso.assumidos)}.)"
 
@@ -242,23 +263,30 @@ class Agente:
         except ValueError as e:
             caso.registrar("buscar_unidades", "guardrail", entrada={"comunidade": caso.comunidade},
                            saida={"erro": str(e)})
-            texto += " Comunidade não cadastrada: contate a unidade de referência."
+            texto += " Comunidade sem tabela de distâncias: contate a unidade de referência."
         caso.historico.append(Mensagem(autor="agente", texto=texto))
         self._orientar(caso, cls)
 
     def _orientar(self, caso: Caso, cls) -> None:
         """buscar_protocolo (RAG) -> LLM escreve a fala -> verificador. Sem trecho, sem orientação."""
         t0 = time.perf_counter()
-        consulta = orientador.montar_consulta(caso.campos)
+        falas_acs = " ".join(m.texto for m in caso.historico if m.autor == "acs")
+        consulta = orientador.montar_consulta(caso.campos, falas_acs)
         filtro = orientador.filtros(caso.campos)
         try:
             if self._buscador is None:
                 from rag.buscar import Buscador
                 self._buscador = Buscador()
-            candidatos = self._buscador.buscar(consulta, filtro["subtipo"], filtro["condicoes"], k=12)
+            candidatos = self._buscador.buscar(consulta, filtro["subtipo"], filtro["condicoes"], k=12, cor=cls.cor)
         except (FileNotFoundError, ValueError) as e:
             caso.registrar("buscar_protocolo", "guardrail", saida={"erro": str(e)}, ms=_ms(t0))
             candidatos = []
+
+        # Caso grave: nada de "quando voltar"/"pode ficar em casa" (proteção do Carlos, PR #1).
+        # Trechos só para casos leves são marcados com "cores" no próprio JSON (filtrados na busca).
+        if cls.cor in ("vermelho", "laranja"):
+            candidatos = [c for c in candidatos if c["tipo"] != "quando_voltar"]
+
         trechos = orientador.escolher(candidatos)
         caso.registrar("buscar_protocolo", "rag",
                        entrada={"consulta": consulta, "subtipo": filtro["subtipo"],
@@ -281,8 +309,15 @@ class Agente:
             caso.orientacao = Orientacao(status="so_trechos", trechos=recuperados,
                                          problemas_verificador=["o modelo não gerou a orientação"])
             return
-        if not resp.citacoes:
-            resp.citacoes = list(dict.fromkeys(RE_CITACAO.findall(resp.fala)))
+        fala, removidas = remover_frases_sem_fonte(resp.fala)
+        if removidas:
+            caso.registrar("frase_sem_fonte_removida", "guardrail", saida={"removidas": removidas})
+        citadas = list(dict.fromkeys(RE_CITACAO.findall(fala)))
+        if not citadas:
+            caso.orientacao = Orientacao(status="so_trechos", trechos=recuperados,
+                                         problemas_verificador=[f"frase sem fonte: {f[:80]}" for f in removidas])
+            return
+        resp = RespostaOrientar(fala=fala, citacoes=citadas)
         problemas = verificar(resp.fala, resp.citacoes, trechos)
         caso.registrar("verificador", "guardrail" if problemas else "codigo",
                        entrada={"citacoes": resp.citacoes}, saida={"aprovado": not problemas, "problemas": problemas})

@@ -6,6 +6,7 @@ Uso:
   python scripts/conversar.py --roteiro "manchas roxas na perna, sem pancada|sim|não"
       (falas separadas por '|': roda sozinho, bom para testar)
 """
+from __future__ import annotations
 import argparse
 import json
 import sys

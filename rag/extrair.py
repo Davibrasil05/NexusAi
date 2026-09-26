@@ -6,6 +6,7 @@ com metadados genéricos (e um aviso), para nada ficar de fora.
 
 Uso: python -m rag.extrair
 """
+from __future__ import annotations
 import json
 import re
 import sys

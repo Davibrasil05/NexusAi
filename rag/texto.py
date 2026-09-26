@@ -1,4 +1,5 @@
 """Normalização de texto compartilhada entre indexação e busca (tudo offline)."""
+from __future__ import annotations
 import re
 
 from unidecode import unidecode

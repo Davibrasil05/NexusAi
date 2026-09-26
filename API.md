@@ -15,7 +15,7 @@ LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000      # modelo loc
 | Método | Rota | Corpo | Resposta |
 |---|---|---|---|
 | GET | `/api/config` | | `{llm, comunidades[], sinal}` |
-| POST | `/api/casos` | `{idade?, comunidade}` | `Caso` |
+| POST | `/api/casos` | `{idade?, comunidade}` (texto livre; acento e maiúscula não importam) | `Caso` |
 | POST | `/api/casos/{id}/mensagens` | `{texto}` | `Caso` |
 | POST | `/api/casos/{id}/foto` | `{imagem: "data:image/jpeg;base64,..."}` (até 5 MB) | `Caso` |
 | POST | `/api/casos/{id}/confirmar` | | `{caso, ficha}` |
@@ -48,6 +48,7 @@ LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000      # modelo loc
   "ficha_id": 1
 }
 ```
+- `destino == null` → comunidade fora da tabela de distâncias: mostrar "contate a unidade de referência".
 - `sem_protocolo` → mostrar "Sem protocolo para essa situação, contate a unidade".
 - `so_trechos` → não há fala; mostrar só os trechos originais.
 - Cores do painel de raciocínio por `quem`: llm roxo, codigo azul, rag verde, guardrail âmbar, pessoa cinza.

@@ -1,4 +1,5 @@
 """Configuração lida de variáveis de ambiente. Nada aqui acessa a internet."""
+from __future__ import annotations
 import os
 from pathlib import Path
 
@@ -17,9 +18,9 @@ LLM_TIMEOUT_S = float(os.getenv("LLM_TIMEOUT_S", "30"))
 # Probabilidade (0 a 1) de o mock devolver JSON quebrado, para testar os guardrails.
 LLM_MOCK_FALHAS = float(os.getenv("LLM_MOCK_FALHAS", "0"))
 
-# False = o agente usa a pergunta padrão do código, sem chamar o LLM (metade das chamadas).
-# Plano B se o modelo estiver lento.
-LLM_REESCREVE_PERGUNTA = os.getenv("LLM_REESCREVE_PERGUNTA", "1") == "1"
+# Desligado: as perguntas são as do código (app/regras.py), sempre iguais e revisadas, e cada
+# resposta fica ~1,5 s mais rápida. O LLM continua ENTENDENDO as respostas. Ligar com =1.
+LLM_REESCREVE_PERGUNTA = os.getenv("LLM_REESCREVE_PERGUNTA", "0") == "1"
 
 RAG_LIMIAR = float(os.getenv("RAG_LIMIAR", "0.5"))
 RAG_TOP_K = int(os.getenv("RAG_TOP_K", "4"))

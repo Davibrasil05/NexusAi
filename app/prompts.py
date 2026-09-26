@@ -2,6 +2,7 @@
 
 Contrato: a mensagem do usuário é sempre um JSON com "tarefa" (ver app/llm/base.py).
 """
+from __future__ import annotations
 import json
 
 DESCRICAO_CAMPOS = {
@@ -12,7 +13,8 @@ DESCRICAO_CAMPOS = {
     "dor_forte_ou_falta_ar": "dor forte na barriga ou falta de ar depois do trauma",
     "deformidade": "membro torto, frio ou azulado",
     "mexe_apoia": "consegue mexer e apoiar o braço ou a perna",
-    "crescendo_ou_sangrando": "a própria mancha roxa crescendo rápido, ou um corte/ferida que não para de sangrar (sangue na gengiva, nariz ou urina NÃO conta aqui: é sangramento_mucosa)",
+    "crescendo": "a própria mancha roxa está aumentando rápido",
+    "sangramento_nao_para": "um corte ou ferida que não para de sangrar (sangue na gengiva, nariz ou xixi NÃO conta aqui: é sangramento_mucosa)",
     "febre": "febre nos últimos dias",
     "sangramento_mucosa": "sangramento na gengiva, no nariz ou na urina",
     "petequias": "pontinhos vermelhos na pele",
@@ -60,10 +62,15 @@ SISTEMA_ORIENTAR = """Você ajuda um Agente Comunitário de Saúde (ACS) a orien
 Escreva uma orientação curta, em português simples, usando SOMENTE os trechos do protocolo fornecidos.
 
 Regras:
-- Depois de cada frase, cite o id do trecho entre colchetes, ex.: [dengue_nao_fazer_01].
+- TODA frase termina com o id do trecho entre colchetes, ex.: [dengue_nao_fazer_01]. Frase sem id é recusada.
+- Não escreva frase que não venha de um trecho (nada de conclusão, resumo ou despedida).
 - Não acrescente remédio, dose, exame ou conduta que não esteja nos trechos.
 - Comece pelo que fazer agora; depois o que não fazer; depois quando procurar ajuda.
 - No máximo 5 frases. Não repita o destino nem a cor.
+
+Exemplo (trechos: gelo_01 = "Aplicar compressa fria ou gelo envolto em pano por 15 a 20 minutos.",
+massagem_01 = "Não massagear o local.", voltar_01 = "Procurar a unidade se o hematoma aumentar ou a dor piorar."):
+{"fala": "Coloque gelo enrolado em um pano no roxo por 15 a 20 minutos [gelo_01]. Não massageie o local [massagem_01]. Procure a unidade se o roxo aumentar ou a dor piorar [voltar_01].", "citacoes": ["gelo_01", "massagem_01", "voltar_01"]}
 
 Responda SOMENTE com um JSON: {"fala": "...", "citacoes": ["id1", "id2"]}"""
 
@@ -111,4 +118,8 @@ def orientar(cor: str, motivos: list[str], trechos: list[dict], aviso: str | Non
     }
     if aviso:
         pedido["aviso"] = aviso
-    return [{"role": "system", "content": SISTEMA_ORIENTAR}, {"role": "user", "content": _json(pedido)}]
+        
+    sistema = SISTEMA_ORIENTAR
+    sistema += f"\n\nO risco calculado para este paciente é {cor.upper()}. REGRA ABSOLUTA: Se o risco for VERMELHO ou LARANJA, é estritamente proibido aconselhar o paciente a ficar em observação em casa ou aguardar revisita. Use APENAS os trechos fornecidos que condizem com uma emergência médica."
+    
+    return [{"role": "system", "content": sistema}, {"role": "user", "content": _json(pedido)}]
