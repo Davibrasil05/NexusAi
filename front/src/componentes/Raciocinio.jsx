@@ -55,7 +55,7 @@ export function RaciocinioLateral({ passos }) {
       aria-label="Painel de raciocínio"
       className="sticky top-6 hidden max-h-[calc(100dvh-48px)] self-start overflow-auto rounded-3xl bg-white p-5 shadow-sm lg:block"
     >
-      <h2 className="text-xl font-bold tracking-tight">Como o agente decidiu</h2>
+      <h2 className="text-xl font-bold tracking-tight">Como o assistente decidiu</h2>
       <p className="mb-3 text-[15px] text-suave">Cada passo, na ordem. Toque em "detalhes" para ver entrada e saída.</p>
       <Legenda />
       <ListaPassos passos={passos} />
@@ -66,12 +66,12 @@ export function RaciocinioLateral({ passos }) {
 export function RaciocinioGaveta({ aberta, onFechar, passos }) {
   if (!aberta) return null;
   return (
-    <div className="fixed inset-0 z-30 lg:hidden" role="dialog" aria-modal="true" aria-label="Como o agente decidiu">
+    <div className="fixed inset-0 z-30 lg:hidden" role="dialog" aria-modal="true" aria-label="Como o assistente decidiu">
       <button type="button" aria-label="Fechar" onClick={onFechar} className="absolute inset-0 bg-black/45" />
       <div className="animate-subir absolute inset-x-0 bottom-0 max-h-[82dvh] overflow-auto rounded-t-3xl bg-white px-4 pb-[max(20px,env(safe-area-inset-bottom))] pt-2.5">
         <div className="mx-auto mb-3 h-1.5 w-11 rounded-full bg-linha" />
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-xl font-bold">Como o agente decidiu</h2>
+          <h2 className="text-xl font-bold">Como o assistente decidiu</h2>
           <button type="button" onClick={onFechar} aria-label="Fechar" className="grid size-11 place-items-center rounded-full bg-fundo">
             <X className="size-5" />
           </button>

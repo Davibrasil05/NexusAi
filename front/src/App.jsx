@@ -8,6 +8,10 @@ import TelaEnviado from "./componentes/TelaEnviado";
 import PainelUnidade from "./componentes/PainelUnidade";
 import { RaciocinioGaveta, RaciocinioLateral } from "./componentes/Raciocinio";
 
+// A comunidade do ACS quase nunca muda: lembra a última (só neste aparelho).
+const lerComunidade = () => {
+  try { return localStorage.getItem("comunidade") || ""; } catch { return ""; }
+};
 const INICIO = { comunidade: "", idade: "", foto: null };
 
 function useRota() {
@@ -25,7 +29,7 @@ export default function App() {
   const [config, setConfig] = useState(null);
   const [sinal, setSinal] = useState({ ligado: false, na_fila: 0 });
   const [tela, setTela] = useState("inicio"); // inicio | conversa | resultado | enviado
-  const [dados, setDados] = useState(INICIO);
+  const [dados, setDados] = useState(() => ({ ...INICIO, comunidade: lerComunidade() }));
   const [caso, setCaso] = useState(null);
   const [ficha, setFicha] = useState(null);
   const [pendente, setPendente] = useState(null);
@@ -66,7 +70,8 @@ export default function App() {
     setOcupado(true);
     try {
       const idade = dados.idade === "" ? null : Number(dados.idade);
-      let novo = await api.abrirCaso(dados.comunidade, idade);
+      try { localStorage.setItem("comunidade", dados.comunidade.trim()); } catch { /* sem armazenamento: tudo bem */ }
+      let novo = await api.abrirCaso(dados.comunidade.trim(), idade);
       if (dados.foto) novo = await api.foto(novo.id, dados.foto).catch(() => novo);
       setCaso(novo);
       setTela("conversa");
@@ -116,7 +121,7 @@ export default function App() {
   }
 
   const subtitulo = {
-    inicio: "Hematoma · funciona sem internet",
+    inicio: "Mancha roxa (hematoma) · funciona sem internet",
     conversa: `${dados.comunidade}${dados.idade !== "" ? ` · ${dados.idade} anos` : ""}`,
     resultado: "Resultado da triagem",
     enviado: "Ficha do atendimento",

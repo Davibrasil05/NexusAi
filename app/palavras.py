@@ -49,10 +49,15 @@ LEXICO_BOOL: dict[str, dict[str, list[str]]] = {
         "pos": [r"mexe", r"apoia", r"pisa\b", r"anda (normal|bem)", r"consegue (mexer|andar|apoiar|pisar)",
                 r"movimenta"],
     },
-    "crescendo_ou_sangrando": {
+    "crescendo": {
+        "neg": [r"mesmo tamanho", r"nao (cresceu|aumentou|esta crescendo|ta crescendo|esta aumentando|ta aumentando)"],
+        "pos": [r"crescendo", r"cresceu", r"aumentando", r"aumentou", r"inchando (rapido|muito)", r"so aumenta",
+                r"espalhando"],
+    },
+    "sangramento_nao_para": {
         "neg": [],
-        "pos": [r"crescendo", r"aumentando", r"inchando (rapido|muito)", r"nao para de sangrar",
-                r"sangrando muito", r"sangue nao para", r"so aumenta"],
+        "pos": [r"nao para de sangrar", r"sangrando muito", r"sangue nao para", r"sangramento que nao para",
+                r"jorrando", r"sangrando sem parar"],
     },
     "febre": {
         "neg": [],
@@ -98,6 +103,7 @@ LEXICO_CATEGORIA: dict[str, dict[str, list[str]]] = {
                          r"bateu (a \w+ )?n[oa] (mesa|porta|cadeira|banco|parede|quina|cama)", r"brincando"],
         "acidente_barco": [r"barco", r"canoa", r"rabeta", r"voadeira", r"lancha", r"batelao"],
         "acidente_motor": [r"moto\b", r"motocicleta", r"carro", r"atropel"],
+        "outro": [r"outro jeito", r"de outro jeito", r"outra coisa"],
         "queda_altura": [r"altura", r"escada", r"telhado", r"acaizeiro", r"arvore", r"jirau", r"palafita",
                          r"trapiche", r"ponte", r"caiu d[oa] alto"],
     },

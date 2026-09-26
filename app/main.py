@@ -24,7 +24,7 @@ from app.config import FOTOS, WEB
 from app.llm import criar_llm
 from app.modelos import Caso, EstadoSinal, NovaFoto, NovaMensagem, NovoCaso
 from app.unidades import carregar as carregar_unidades
-from app.unidades import comunidades
+from app.unidades import comunidades, resolver_comunidade
 
 MAX_FOTO_BYTES = 5 * 1024 * 1024
 RE_DATA_URL = re.compile(r"^data:image/(jpeg|jpg|png|webp);base64,(.+)$", re.DOTALL)
@@ -57,9 +57,9 @@ def config():
 
 @app.post("/api/casos", response_model=Caso)
 def abrir_caso(dados: NovoCaso):
-    if dados.comunidade not in comunidades():
-        raise HTTPException(422, f"comunidade desconhecida; use uma de {comunidades()}")
-    caso = agente.novo_caso(dados.comunidade, dados.idade)
+    # Comunidade digitada: se não estiver na tabela de tempos, o atendimento segue e o destino
+    # diz para contatar a unidade de referência.
+    caso = agente.novo_caso(resolver_comunidade(dados.comunidade), dados.idade)
     casos[caso.id] = caso
     _trava_casos[caso.id] = threading.Lock()
     return caso

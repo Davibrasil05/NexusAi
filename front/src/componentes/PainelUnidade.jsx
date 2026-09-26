@@ -21,14 +21,14 @@ function Ficha({ f }) {
             <span className="text-sm font-semibold text-green-700">em casa</span>
           )}
         </div>
-        {f.foto && <img src={f.foto} alt="Foto do hematoma" className="float-right ml-3 mt-3 size-16 rounded-xl object-cover" />}
+        {f.foto && <img src={f.foto} alt="Foto da mancha roxa" className="float-right ml-3 mt-3 size-16 rounded-xl object-cover" />}
         <p className="mt-3 font-semibold">
           {f.idade != null ? `${f.idade} anos · ` : ""}{f.comunidade}
         </p>
         <p className="mt-1 text-[15px] text-suave">{f.motivos.join("; ")}</p>
         <p className="mt-2 flex items-center gap-1.5 text-sm text-suave">
           {f.em_casa ? <Home className="size-4" /> : <Ship className="size-4" />}
-          {f.em_casa ? "Revisita do ACS" : `${f.destino_nome} · ${minutos(f.tempo_barco_min)} de barco`}
+          {f.em_casa ? "Revisita do ACS" : f.destino_nome ? `${f.destino_nome} · ${minutos(f.tempo_barco_min)} de barco` : "Sem destino: comunidade sem tabela de distâncias"}
           <span className="ml-auto">nº {f.id}</span>
         </p>
       </div>

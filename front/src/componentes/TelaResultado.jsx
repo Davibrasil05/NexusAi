@@ -141,7 +141,7 @@ export default function TelaResultado({ caso, ocupado, onConfirmar, onCancelar, 
               </div>
             </div>
           ) : (
-            <p className="text-base text-suave">Destino não definido. Contate a unidade de referência.</p>
+            <p className="text-base text-suave">Esta comunidade ainda não tem a tabela de distâncias. Contate a unidade de referência.</p>
           )}
         </section>
 
@@ -152,9 +152,9 @@ export default function TelaResultado({ caso, ocupado, onConfirmar, onCancelar, 
 
         <button type="button" onClick={onAbrirRaciocinio}
           className="flex min-h-11 w-full items-center justify-center gap-2 text-[15px] font-semibold text-roxo-700 lg:hidden">
-          <ListTree className="size-4" /> Como o agente decidiu
+          <ListTree className="size-4" /> Ver como o assistente decidiu
         </button>
-        <p className="px-2 text-center text-sm text-suave">O agente apoia a decisão. A palavra final é do ACS.</p>
+        <p className="px-2 text-center text-sm text-suave">O assistente ajuda na decisão. A palavra final é sempre do ACS.</p>
       </main>
 
       <footer className="space-y-2.5 border-t border-linha bg-white p-4 pb-[max(16px,env(safe-area-inset-bottom))]">

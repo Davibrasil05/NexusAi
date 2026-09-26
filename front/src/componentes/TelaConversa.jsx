@@ -15,7 +15,7 @@ function Pensando() {
           <i key={d} className="size-2 animate-pulo rounded-full bg-roxo-600" style={{ animationDelay: `${d}ms` }} />
         ))}
       </span>
-      {demorou ? "Buscando no protocolo…" : "Pensando…"}
+      {demorou ? "Preparando a orientação…" : "Analisando a resposta…"}
     </div>
   );
 }
@@ -77,6 +77,9 @@ export default function TelaConversa({ caso, pendente, pensando, onEnviar, onAbr
 
       <footer className="space-y-3 border-t border-linha bg-white p-3 pb-[max(12px,env(safe-area-inset-bottom))]">
         {chips.length > 0 && (
+          <p className="px-1 text-sm font-semibold text-suave">Toque na resposta:</p>
+        )}
+        {chips.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {chips.map((c) => (
               <button
@@ -105,7 +108,7 @@ export default function TelaConversa({ caso, pendente, pensando, onEnviar, onAbr
             disabled={pensando}
             autoComplete="off"
             enterKeyHint="send"
-            placeholder={chips.length ? "Ou escreva do seu jeito…" : "Escreva a resposta…"}
+            placeholder={chips.length ? "Ou escreva com suas palavras…" : "Escreva a resposta…"}
             className="h-14 min-w-0 flex-1 rounded-2xl border-2 border-linha bg-fundo px-4 outline-none focus:border-roxo-600 focus:bg-white focus:ring-4 focus:ring-roxo-100 disabled:opacity-60"
           />
           <button
@@ -119,7 +122,7 @@ export default function TelaConversa({ caso, pendente, pensando, onEnviar, onAbr
         </form>
         <button type="button" onClick={onAbrirRaciocinio}
           className="flex min-h-11 w-full items-center justify-center gap-2 text-[15px] font-semibold text-roxo-700 lg:hidden">
-          <ListTree className="size-4" /> Como o agente está decidindo
+          <ListTree className="size-4" /> Ver como o assistente está decidindo
         </button>
       </footer>
     </>
