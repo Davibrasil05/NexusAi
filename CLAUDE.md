@@ -26,6 +26,8 @@ app/regras.py        sinais de alerta, cor, campos que faltam, perguntas padrão
 app/palavras.py      extrator por palavras-chave (mock, fallback, rede de segurança); negação para na vírgula
 app/prompts.py       prompts: extrair, perguntar, orientar (user msg = JSON com "tarefa")
 app/agente.py        loop: atualizar_caso → rede → avaliar_risco → perguntar | encerrar (destino + orientação)
+app/main.py          API FastAPI (rotas em API.md); casos em memória
+app/fichas.py        gerar_ficha + fila SQLite + sinal
 app/unidades.py      buscar_unidades: menor tempo de barco entre as que têm TODOS os recursos
 app/orientador.py    consulta do RAG montada do CASO + escolha de 1 trecho por tipo
 app/llm/             base.py (contrato), mock.py, ollama.py
@@ -38,6 +40,7 @@ scripts/conversar.py      agente no terminal (--llm ollama --passos --roteiro "a
 
 ## Comandos
 ```bash
+LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000
 .venv/bin/python scripts/conversar.py --llm ollama --passos
 .venv/bin/python scripts/testar_modelo.py qwen3:8b
 .venv/bin/python -m rag.indexar
@@ -55,7 +58,7 @@ scripts/conversar.py      agente no terminal (--llm ollama --passos --roteiro "a
 - [x] 2. Loop de coleta no terminal com guardrails
 - [x] 3. Destino por recurso
 - [x] 4. Orientação: RAG → LLM → verificador (testado com índice de teste; **índice real vazio** até o amigo alimentar)
-- [ ] 5. API FastAPI + ficha + fila offline (botão sinal on/off)
+- [x] 5. API FastAPI + ficha (SQLite dados/fichas.db) + fila offline + sinal simulado. Contrato: `API.md`
 - [ ] 6. Front: tela do ACS, painel de raciocínio, painel da unidade (sem CDN: é offline)
 - [ ] 7. Avaliação golden.json (~15 casos; meta: zero grave como leve)
 - [ ] 8. Ensaio offline + vídeo de backup (~13h)
