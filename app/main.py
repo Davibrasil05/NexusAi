@@ -21,6 +21,7 @@ from app.agente import Agente, CasoEncerrado
 from app.config import FOTOS, WEB
 from app.llm import criar_llm
 from app.modelos import Caso, EstadoSinal, NovaFoto, NovaMensagem, NovoCaso
+from app.unidades import carregar as carregar_unidades
 from app.unidades import comunidades
 
 MAX_FOTO_BYTES = 5 * 1024 * 1024
@@ -46,7 +47,8 @@ def _caso(caso_id: str) -> Caso:
 
 @app.get("/api/config")
 def config():
-    return {"llm": llm.nome, "comunidades": comunidades(), "sinal": fichas.sinal_ligado()}
+    unidades = [{"id": u["id"], "nome": u["nome"]} for u in carregar_unidades()["unidades"]]
+    return {"llm": llm.nome, "comunidades": comunidades(), "unidades": unidades, "sinal": fichas.sinal_ligado()}
 
 
 # ---------- caso (tela do ACS) ----------

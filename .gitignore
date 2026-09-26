@@ -9,3 +9,6 @@ rag/indice/
 dados/fotos/*
 !dados/fotos/.gitkeep
 dados/*.db
+
+# front (React): o build vai para web/ e é versionado; node_modules não
+front/node_modules/

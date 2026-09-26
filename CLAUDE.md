@@ -33,6 +33,8 @@ app/orientador.py    consulta do RAG montada do CASO + escolha de 1 trecho por t
 app/llm/             base.py (contrato), mock.py, ollama.py
 rag/                 extrair.py, indexar.py, buscar.py (BM25), verificar.py, texto.py, fontes.json, curados/
 rag/COMO_ALIMENTAR.md  guia para quem adiciona protocolos
+front/src/           React: App.jsx (telas), componentes/, textos.js (rótulos ACS), api.js
+web/                 BUILD do front (gerado por `npm run build`; versionado para a demo rodar sem Node)
 dados/unidades.json  4 unidades / 3 comunidades FICTÍCIAS
 scripts/testar_modelo.py  JSON válido, acerto de campos, segundos por resposta
 scripts/conversar.py      agente no terminal (--llm ollama --passos --roteiro "a|b|c")
@@ -47,6 +49,12 @@ LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000
 .venv/bin/python -m rag.buscar "febre gengiva sangrando" --subtipo espontaneo --condicao dengue
 ```
 
+## Front
+- Mobile first, claro, roxo #820AD1. Fonte Inter embutida (@fontsource), ícones lucide-react: nada de CDN.
+- Depois de mudar `front/src`, rodar `cd front && npm run build` (senão a API serve o build antigo).
+- Dev com recarga: `cd front && npm run dev` (porta 5173, repassa /api para a 8000).
+- Chrome recente: `scrollIntoView` devolve Promise → efeitos do React SEMPRE com chaves `useEffect(() => { ... })`.
+
 ## Modelo local
 - `qwen3:8b` (Q4_K_M) no Ollama 0.34. Mac arm64, 24 GB.
 - **Raciocínio desligado** com `reasoning_effort="none"` (25 s → 3 s). `extra_body={"think": False}` NÃO funciona.
@@ -59,7 +67,7 @@ LLM_PROVEDOR=ollama .venv/bin/uvicorn app.main:app --port 8000
 - [x] 3. Destino por recurso
 - [x] 4. Orientação: RAG → LLM → verificador (testado com índice de teste; **índice real vazio** até o amigo alimentar)
 - [x] 5. API FastAPI + ficha (SQLite dados/fichas.db) + fila offline + sinal simulado. Contrato: `API.md`
-- [ ] 6. Front: tela do ACS, painel de raciocínio, painel da unidade (sem CDN: é offline)
+- [x] 6. Front React + Tailwind 4 (Vite) em `front/`; build versionado em `web/` (a API serve em /web/, painel em /web/#/painel)
 - [ ] 7. Avaliação golden.json (~15 casos; meta: zero grave como leve)
 - [ ] 8. Ensaio offline + vídeo de backup (~13h)
 
